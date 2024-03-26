@@ -85,7 +85,7 @@ export default function Dashboard() {
         <body class="h-full">
         ```
       */}
-      {user.emailVerified == false ? <NotVerified /> : <></>}
+      {user.emailVerified == false ? <NotVerified user={user}/> : <></>}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog

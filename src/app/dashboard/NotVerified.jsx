@@ -1,9 +1,22 @@
 import { Fragment, useState } from "react";
+import { sendVerificationEmail } from "../firebase/firebase"
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
 
-export default function NotVerified() {
+export default function NotVerified({user}) {
   const [open, setOpen] = useState(true);
+
+
+  const sendEmail = async () => {
+
+    try {
+      await sendVerificationEmail(user)
+      
+    } catch (error) {
+      console.log(error, "error not verified")
+    }
+
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -48,19 +61,21 @@ export default function NotVerified() {
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Please check your email for a link to verify your email address. If you clicked the link please refresh page. 
+                        Please check your email for a link to verify your email
+                        address. If you clicked the link please refresh page.
                       </p>
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-6">
+                <div className="mt-5 sm:mt-6 flex space-x-4">
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    onClick={() => setOpen(false)}
+                    onClick={sendEmail}
                   >
                     Re-send Link
                   </button>
+              
                 </div>
               </Dialog.Panel>
             </Transition.Child>

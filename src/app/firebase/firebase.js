@@ -38,6 +38,8 @@ const sendVerificationEmail = async (user) => {
     handleCodeInApp: true,
   };
 
+  console.log(user, "user")
+
   await sendEmailVerification(user, actionCodeSettings);
 }
 
@@ -77,6 +79,8 @@ const signInEmail = async (email, password)=> {
 
   return userCredential
 }
+
+
 
 
 
