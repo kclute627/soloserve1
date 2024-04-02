@@ -1,7 +1,7 @@
 
-import { getApp, getApps, initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp, } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from "@firebase/auth";
-import {getFirestore, addDoc, collection} from "firebase/firestore"
+import {getFirestore, addDoc, collection, doc, getDoc, setDoc, where} from "firebase/firestore"
 import { v4 as uuidv4 } from "uuid";
 
 
@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app)
 
-const db = getFirestore(app)
+const db = getFirestore()
 
 const signUserUp = async (email, password) => {
     const user = await createUserWithEmailAndPassword(auth, email, password);
@@ -67,7 +67,31 @@ const createUserInDb = async (user, company, firstName, lastname, address, phone
     user_plan: "free",
   };
 
-  const docRef = await addDoc(collection(db, "users"), userData);
+  console.log(user.uid, "line 70")
+
+  const docRef = await setDoc(doc(db, "users", user.uid), userData);
+
+}
+
+const getUserFromDb = async (authUid) => {
+
+  try {
+    
+    const docRef = doc(db, "users", authUid.uid);
+    const userDoc = await getDoc(docRef)
+
+    console.log(userDoc)
+
+    if(userDoc.exists()){
+    
+      return userDoc.data()
+    }else {
+      console.log('User document does not exist');
+    }
+    
+  } catch (error) {
+    console.error('Error fetching user document:', error);
+  }
 
 }
 
@@ -83,4 +107,4 @@ const signInEmail = async (email, password)=> {
 
 
 
-export {app, auth, db, signUserUp, sendVerificationEmail, createUserInDb, signInEmail}
+export {app, auth, db, signUserUp, sendVerificationEmail, createUserInDb, signInEmail, getUserFromDb}

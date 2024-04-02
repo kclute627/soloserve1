@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import {signInWithEmailAndPassword} from 'firebase/auth';
-import { auth } from "@/app/firebase/firebase";
+import { auth } from "../../../src/app/firebase/firebase";
 import { useRouter } from "next/navigation";
 
 

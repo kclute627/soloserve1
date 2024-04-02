@@ -62,15 +62,11 @@ export default function Dashboard() {
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
+    
       {user.emailVerified == false ? <NotVerified /> : <></>}
+      <div className="">
+        <h1>Dashboard</h1>
+      </div>
      
     </>
   );

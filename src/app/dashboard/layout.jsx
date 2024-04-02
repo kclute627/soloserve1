@@ -5,22 +5,24 @@ import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
   BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
-  FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
+  BanknotesIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { auth } from "../firebase/firebase";
+import { auth, getUserFromDb } from "../firebase/firebase";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams, usePathname  } from "next/navigation";
+import SidebarDesktop from "./Layout/SidebarDesktop";
+import SidebarBottom from "./Layout/SidebarBottom";
+import Link from "next/link";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -39,23 +41,88 @@ const userNavigation = [
 function layout({ children }) {
   const [currentNavigation, setCurrentNavigation] = useState("Dashboard");
   const [navigation, setNavigation] = useState([
-    { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-    { name: "Team", href: "#", icon: UsersIcon, current: false },
-    { name: "Projects", href: "#", icon: FolderIcon, current: false },
-    { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: true },
     {
-      name: "Documents",
-      href: "#",
+      name: "Jobs",
+      href: "/dashboard/jobs",
       icon: DocumentDuplicateIcon,
       current: false,
     },
-    { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
+    {
+      name: "Clients",
+      href: "/dashboard/clients",
+      icon: UserGroupIcon,
+      current: false,
+    },
+    {
+      name: "Invoices",
+      href: "/dashboard/invoices",
+      icon: BanknotesIcon,
+      current: false,
+    },
+    {
+      name: "Servers",
+      href: "/dashboard/servers",
+      icon: UsersIcon,
+      current: false,
+    },
+    {
+      name: "Settings",
+      href: "/dashboard/settings",
+      icon: Cog6ToothIcon,
+      current: false,
+    },
   ]);
+
+
+
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState("");
 
+  const sidebarClick = (e, itemname) => {
+    e.preventDefault();
+
+    setCurrentNavigation(itemname);
+  };
+
+  useEffect(() => {
+    onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+     
+        try {
+          const userInfo = await getUserFromDb(authUser);
+       
+
+          setUser(userInfo)
+         
+          
+        } catch (error) {
+          console.log(error, "error line98")
+          
+        }
+        
+     
+        
+      }
+
+      // if (!user) {
+      //   // User is signed out
+      //   // ...
+      //   router.push("/");
+      //   //   console.log("user is logged out");
+      // }
+    });
+  }, []);
+
+
+
   const router = useRouter();
+  const path = usePathname();
+
+  console.log(path, "path")
+
+
   return (
     <>
       <div>
@@ -128,9 +195,7 @@ function layout({ children }) {
                               <li key={item.name}>
                                 <a
                                   href={item.href}
-                                  onClick={() =>
-                                    setCurrentNavigation(item.name)
-                                  }
+                                  onClick={(e) => sidebarClick(e, item.name)}
                                   className={classNames(
                                     item.name == currentNavigation
                                       ? "bg-gray-50 text-indigo-600"
@@ -153,50 +218,7 @@ function layout({ children }) {
                             ))}
                           </ul>
                         </li>
-                        <li>
-                          <div className="text-xs font-semibold leading-6 text-gray-400">
-                            Your teams
-                          </div>
-                          <ul role="list" className="-mx-2 mt-2 space-y-1">
-                            {teams.map((team) => (
-                              <li key={team.name}>
-                                <a
-                                  href={team.href}
-                                  className={classNames(
-                                    team.current
-                                      ? "bg-gray-50 text-indigo-600"
-                                      : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                  )}
-                                >
-                                  <span
-                                    className={classNames(
-                                      team.current
-                                        ? "text-indigo-600 border-indigo-600"
-                                        : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
-                                    )}
-                                  >
-                                    {team.initial}
-                                  </span>
-                                  <span className="truncate">{team.name}</span>
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
-                        <li className="mt-auto">
-                          <a
-                            href="#"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                          >
-                            <Cog6ToothIcon
-                              className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                              aria-hidden="true"
-                            />
-                            Settings
-                          </a>
-                        </li>
+                        <SidebarBottom teams={teams} />
                       </ul>
                     </nav>
                   </div>
@@ -206,98 +228,13 @@ function layout({ children }) {
           </Dialog>
         </Transition.Root>
 
-        {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                alt="Your Company"
-              />
-            </div>
-            <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
-                      <li
-                        key={item.name}
-                        onClick={() => setCurrentNavigation(item.name)}
-                      >
-                        <a
-                          href={item.href}
-                          className={classNames(
-                            item.name == currentNavigation
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                          )}
-                        >
-                          <item.icon
-                            className={classNames(
-                              item.name == currentNavigation
-                                ? "text-indigo-600"
-                                : "text-gray-400 group-hover:text-indigo-600",
-                              "h-6 w-6 shrink-0"
-                            )}
-                            aria-hidden="true"
-                          />
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-                <li>
-                  <div className="text-xs font-semibold leading-6 text-gray-400">
-                    Your teams
-                  </div>
-                  <ul role="list" className="-mx-2 mt-2 space-y-1">
-                    {teams.map((team) => (
-                      <li key={team.name}>
-                        <a
-                          href={team.href}
-                          className={classNames(
-                            team.current
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                          )}
-                        >
-                          <span
-                            className={classNames(
-                              team.current
-                                ? "text-indigo-600 border-indigo-600"
-                                : "text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white"
-                            )}
-                          >
-                            {team.initial}
-                          </span>
-                          <span className="truncate">{team.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-                <li className="mt-auto">
-                  <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                  >
-                    <Cog6ToothIcon
-                      className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                      aria-hidden="true"
-                    />
-                    Settings
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
+        <SidebarDesktop
+          navigation={navigation}
+          currentNavigation={currentNavigation}
+          teams={teams}
+          setCurrentNavigation={setCurrentNavigation}
+          sidebarClick={sidebarClick}
+        />
 
         <div className="lg:pl-72">
           <div className="sticky top-0 z-40 lg:mx-auto lg:max-w-7xl lg:px-8">
@@ -363,7 +300,7 @@ function layout({ children }) {
                           className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                           aria-hidden="true"
                         >
-                          {user.email}
+                          {user ? user.user_first_name : ""}
                         </span>
                         <ChevronDownIcon
                           className="ml-2 h-5 w-5 text-gray-400"
