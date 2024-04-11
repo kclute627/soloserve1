@@ -8,7 +8,7 @@ import React from 'react';
     return classes.filter(Boolean).join(" ");
   }
 
-export default function SidebarDesktop({navigation, currentNavigation, teams, setCurrentNavigation, sidebarClick}) {
+export default function SidebarDesktop({navigation, currentNavigation, teams, setCurrentNavigation, sidebarClick, path}) {
   return (
     <>
      {/* Static sidebar for desktop */}
@@ -29,13 +29,13 @@ export default function SidebarDesktop({navigation, currentNavigation, teams, se
                {navigation.map((item) => (
                  <li
                    key={item.name}
-                   onClick={(e)=> sidebarClick(e, item.name)}
+                   onClick={(e)=> sidebarClick(e, item.href)}
                  >
                 
                    <Link
                      href={item.href}
                      className={classNames(
-                       item.name == currentNavigation
+                       item.href == path
                          ? "bg-gray-50 text-indigo-600"
                          : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
                        "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -43,7 +43,7 @@ export default function SidebarDesktop({navigation, currentNavigation, teams, se
                       >
                      <item.icon
                        className={classNames(
-                         item.name == currentNavigation
+                         item.href == path
                            ? "text-indigo-600"
                            : "text-gray-400 group-hover:text-indigo-600",
                          "h-6 w-6 shrink-0"

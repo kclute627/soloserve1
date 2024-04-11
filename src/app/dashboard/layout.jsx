@@ -79,18 +79,32 @@ function layout({ children }) {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState("");
-
+  const [path, setPath]= useState()
+  const router = useRouter();
+  
+  const path1 = usePathname();
+  
   const sidebarClick = (e, itemname) => {
     e.preventDefault();
 
-    setCurrentNavigation(itemname);
+    setPath(itemname);
   };
+
+  useEffect(()=> {
+    
+    console.log(path1, "path useEffect");
+
+    if(path1 !== path){
+      setPath(path1)
+    }
+
+  }, [path1])
 
   useEffect(() => {
     onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
      
-        try {
+        try { 
           const userInfo = await getUserFromDb(authUser);
        
 
@@ -117,10 +131,7 @@ function layout({ children }) {
 
 
 
-  const router = useRouter();
-  const path = usePathname();
-
-  console.log(path, "path")
+  
 
 
   return (
@@ -195,7 +206,8 @@ function layout({ children }) {
                               <li key={item.name}>
                                 <a
                                   href={item.href}
-                                  onClick={(e) => sidebarClick(e, item.name)}
+                                  
+                                  onClick={(e) => sidebarClick(e, item.href)}
                                   className={classNames(
                                     item.name == currentNavigation
                                       ? "bg-gray-50 text-indigo-600"
@@ -234,6 +246,7 @@ function layout({ children }) {
           teams={teams}
           setCurrentNavigation={setCurrentNavigation}
           sidebarClick={sidebarClick}
+          path={path}
         />
 
         <div className="lg:pl-72">
@@ -342,7 +355,7 @@ function layout({ children }) {
           </div>
 
           <main className="py-10">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto  px-4 sm:px-6 lg:px-8">
               {children}
             </div>
           </main>

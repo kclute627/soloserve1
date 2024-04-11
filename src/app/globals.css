@@ -29,3 +29,45 @@ background: linear-gradient(14deg, rgba(90,133,95,1) 0%, rgba(145,179,142,1) 61%
     text-wrap: balance;
   }
 }
+
+/* 
+transitions */
+
+.job-transition-enter {
+  opacity: 0;
+}
+
+.job-transition-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in-out;
+}
+
+.job-transition-exit {
+  opacity: 1;
+}
+
+.job-transition-exit-active {
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+}
+.file-enter {
+  opacity: 0;
+}
+
+.file-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+.file-exit {
+  opacity: 1;
+}
+
+.file-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+.file:first-child {
+  display: flex;
+}
+
