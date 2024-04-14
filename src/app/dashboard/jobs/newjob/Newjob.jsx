@@ -1,12 +1,12 @@
 import { useState } from "react";
 import NewJobTop from "../newjob/NewJobTop"
-import ServiceDocumentInput from "../newjob/ServiceDocumentsInput"
+import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput"
 
 function Newjob() {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
 
-  const handleDeleteFile = (e,id) => {
+  const handleDeleteFile = (e,id) => {  
 
     e.preventDefault()
 
