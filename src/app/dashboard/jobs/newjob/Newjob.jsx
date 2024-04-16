@@ -1,9 +1,22 @@
 import { useState } from "react";
 import NewJobTop from "../newjob/NewJobTop"
+import ClientInfo from "../newjob/ClientInfo/ClientInfo"
 import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput"
 
+
 function Newjob() {
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([{}]);
+
+
+  const [clientInformation, setClientInformation] = useState({
+    clientRef: "",
+    clientDisplayName: ""
+  })
+
+
+
+
+
 
 
   const handleDeleteFile = (e,id) => {  
@@ -23,6 +36,7 @@ function Newjob() {
 
     // Check if the file is found
     if (index !== -1) {
+      console.log(e.target.value)
         const newDisplayName = e.target.value;
 
         // Create a new array with updated display name
@@ -54,6 +68,7 @@ function Newjob() {
     <div>
       <form action="">
         <ServiceDocumentInput selectedFiles={selectedFiles} setSelectedFiles={setSelectedFiles}  handleFileDisplayNameChange={ handleFileDisplayNameChange} handleDeleteFile={handleDeleteFile} />
+        <ClientInfo clientInformation={clientInformation} setClientInformation={setClientInformation}/>
       </form>
     </div>
   );

@@ -157,7 +157,7 @@ function ServiceDocumentUpload({
                   onDragOver={handleDragOver}
                   onDragEnter={handleDragEnter}
                   onDragLeave={handleDragLeave}
-                  className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                  className=" cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                 >
                   <span>Upload Service Files</span>
                   <input
@@ -176,7 +176,7 @@ function ServiceDocumentUpload({
           </div>
 
           {selectedFiles.length > 0 ? (
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-4 py-4">
               {selectedFiles.map((file, i) => {
                 return (
                   <div className={`relative z-[${1000 - i}]`}>

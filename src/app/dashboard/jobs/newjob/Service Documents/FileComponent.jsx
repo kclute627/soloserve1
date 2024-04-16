@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 const commonDocuments = [
   "Summons",
@@ -7,10 +8,6 @@ const commonDocuments = [
   "Answer",
   "Motion",
   "Discovery",
-  "Summons 3",
-  "Summons 8",
-  "Summons 44",
-  "Summons 9",
 ];
 
 const FileComponent = ({
@@ -23,7 +20,7 @@ const FileComponent = ({
 }) => {
   const newFile = file.file;
   const { displayName } = file;
-  const baseClass = `px-4 py-4 w-full md:w-[35rem] rounded-xl border border-slate-700 p-5 drop-shadow-xl flex bg-slate-200 relative `;
+  const baseClass = `px-4 py-4 w-full md:w-[35rem] rounded-xl border border-slate-700 p-5 drop-shadow-xl flex bg-slate-200 relative z-0`;
 
   const [suggestions, setSuggestions] = useState([]);
   const [inputValue, setInputValue] = useState(file.displayName || "");
@@ -60,7 +57,7 @@ const FileComponent = ({
       setSuggestions(
         commonDocuments
           .filter((doc) => doc.toLowerCase().includes(inputValue.toLowerCase()))
-          .slice(0, 5) // Limit to first 5 suggestions
+          .slice(0, 2) // Limit to first 5 suggestions
       );
     } else {
       setSuggestions([]);
@@ -73,6 +70,11 @@ const FileComponent = ({
     setSuggestions([]);
     // Optionally, you can call your handler here to update the display name
     handleFileDisplayNameChange({ target: { value: suggestion } }, file.id);
+  };
+  const clearDisplayName = () => {
+    console.log("clicked!!!!")
+    setInputValue("");
+    handleFileDisplayNameChange({ target: { value: "" } }, file.id);
   };
   const handleZ = () => {
     setClickedInput((prevIndex) => (prevIndex === index ? prevIndex : index));
@@ -87,21 +89,27 @@ const FileComponent = ({
       className={`${baseClass} ${i == 0 ? "bg-yellow-200" : "bg-slate-300"}`}
       key={file.id}
     >
-      <div className="w-3/4 relative">
+      <div className="w-3/4">
         <label
           htmlFor="displayName"
           className="block text-sm font-medium leading-6 text-gray-900"
         >
           Affidavit Text
         </label>
-        <div className="mt-1 relative">
+        <div className="mt-1 relative z-0">
+          <div
+            className="absolute top-1.5 right-2 z-[90] h-6 w-6"
+            onClick={clearDisplayName}
+          >
+            <XCircleIcon />
+          </div>
           <input
             name="displayName"
             key={`${file.id}-input`}
             type="text"
             value={inputValue}
             onChange={handleInputChange}
-            className=" w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 relative"
+            className=" w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 relative z-[9] pr-10"
             placeholder="Affidavit Text"
             onKeyDown={handleKeyDown}
             autoComplete="off"
@@ -109,6 +117,15 @@ const FileComponent = ({
             onFocus={() => handleZ(i)}
             onInput={() => handleZ(i)}
           />
+
+          <div className="relative z-[99999999999999999]">
+            <AutoCompleteDoc
+              suggestions={suggestions}
+              selectedSuggestionIndex={selectedSuggestionIndex}
+              handleSelectSuggestion={handleSelectSuggestion}
+              i={i}
+            />
+          </div>
         </div>
 
         {newFile && (
@@ -198,20 +215,13 @@ const FileComponent = ({
       {i !== 0 && (
         <div className="absolute bottom-2 right-2 justify-between -z-10">
           <div className=""></div>
-          <div className="relative z-0">Make Main Document</div>
+          <div className="">Make Main Document</div>
         </div>
       )}
       <div className="">
-        {suggestions.length > 0 && inputValue.trim() !== "" && (
-          <div className="relative z-[999999999]">
-            <AutoCompleteDoc
-              suggestions={suggestions}
-              selectedSuggestionIndex={selectedSuggestionIndex}
-              handleSelectSuggestion={handleSelectSuggestion}
-              i={i}
-            />
-          </div>
-        )}
+        {/* {suggestions.length > 0 && inputValue.trim() !== "" && ( */}
+
+        {/* )} */}
       </div>
     </div>
   );
@@ -226,24 +236,22 @@ const AutoCompleteDoc = ({
   i,
 }) => {
   return (
-    <div className="absolute z-[999999999999] w-[10rem] h-[10rem]">
-      <ul
-        className={`absolute top-full left-0 w-full bg-gray-200 rounded-sm overflow-y-auto border-solid shadow-2xl transition ease-in-out `}
-      >
-        {suggestions.map((suggestion, index) => (
-          <li
-            className={
-              index === selectedSuggestionIndex
-                ? "bg-gray-700 text-white p-4 "
-                : "bg-gray-200 p-2 relative "
-            }
-            key={index}
-            onClick={() => handleSelectSuggestion(suggestion)}
-          >
-            {suggestion}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul
+      className={`absolute z-20 top-full left-0 w-full bg-gray-200 rounded-sm overflow-y-auto border-solid shadow-2xl transition ease-in-out `}
+    >
+      {suggestions.map((suggestion, index) => (
+        <li
+          className={
+            index === selectedSuggestionIndex
+              ? "bg-gray-700 text-white p-4 "
+              : "bg-gray-200 p-2 "
+          }
+          key={index}
+          onClick={() => handleSelectSuggestion(suggestion)}
+        >
+          {suggestion}
+        </li>
+      ))}
+    </ul>
   );
 };
