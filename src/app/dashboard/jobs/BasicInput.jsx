@@ -1,4 +1,4 @@
-function BasicInput({label, type, value, onChange, placeholder}) {
+function BasicInput({ label, type, value, onChange, placeholder }) {
   return (
     <div>
       <label
@@ -15,11 +15,10 @@ function BasicInput({label, type, value, onChange, placeholder}) {
           autoComplete="off"
           value={value}
           onChange={onChange}
-          className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-xl sm:leading-6"
           placeholder={placeholder}
-          style={{
-            text: "204px"
-          }}
+          className="input3 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-xl sm:leading-6 focus:border-black"
+
+         
         />
       </div>
     </div>

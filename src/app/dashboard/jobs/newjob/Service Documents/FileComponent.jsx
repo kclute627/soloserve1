@@ -20,7 +20,7 @@ const FileComponent = ({
 }) => {
   const newFile = file.file;
   const { displayName } = file;
-  const baseClass = `px-4 py-4 w-full md:w-[35rem] rounded-xl border border-slate-700 p-5 drop-shadow-xl flex bg-slate-200 relative z-0`;
+  const baseClass = `px-4 py-4 h-[10rem] w-full md:w-[35rem] rounded-xl border border-slate-700 p-5 drop-shadow-xl flex bg-slate-200 relative z-0`;
 
   const [suggestions, setSuggestions] = useState([]);
   const [inputValue, setInputValue] = useState(file.displayName || "");

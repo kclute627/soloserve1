@@ -70,4 +70,11 @@ transitions */
 .file:first-child {
   display: flex;
 }
+input[type='text']:focus { box-shadow: none; }
 
+.input3:focus{
+  box-shadow: black !important;
+  border: black !important;
+  border-style: solid !important;
+
+}
