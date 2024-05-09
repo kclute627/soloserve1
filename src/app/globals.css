@@ -23,6 +23,13 @@ body {
   background: rgb(90,133,95);
 background: linear-gradient(14deg, rgba(90,133,95,1) 0%, rgba(145,179,142,1) 61%, rgba(157,189,154,1) 83%, rgba(197,220,194,1) 100%);
 }
+.input2:focus{
+  box-shadow: black !important;
+  border: black !important;
+  border-style: solid !important;
+  
+  
+}
 
 @layer utilities {
   .text-balance {

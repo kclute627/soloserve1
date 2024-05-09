@@ -1,0 +1,51 @@
+const initialState = {
+    user: null,
+    selectedFiles: [],
+    selectedClient: false,
+    selectedClientInfo: null,
+    clientInformation: {
+      clientRef: "",
+      clientDisplayName: "",
+      client_address: {
+        street: "",
+        suite: "",
+        city: "",
+        state: "",
+        zip: "",
+        lat: "",
+        lng: "",
+        googleMapLink: "",
+      },
+      website: "",
+      contact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+      },
+    },
+    contractInformation: {
+      sendLink: false,
+      contractorDisplayName: "",
+      contractor_address: {
+        street: "",
+        suite: "",
+        city: "",
+        state: "",
+        zip: "",
+        lat: "",
+        lng: "",
+        googleMapLink: "",
+      },
+      website: "",
+      contact: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+      },
+    },
+    serverTypeSelect: "employee",
+    selectedEmployeeServer: "",
+  };
+  

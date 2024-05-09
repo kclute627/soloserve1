@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import Script from "next/script";
+import Logo from "../components/logo/logo";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -16,6 +17,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { auth, getUserFromDb } from "../firebase/firebase";
 import {
+  getUserRequest,
+  getUserFailure,
+  getUserSuccess,
+} from "../Redux/actions";
+import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
@@ -23,7 +29,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import SidebarDesktop from "./Layout/SidebarDesktop";
 import SidebarBottom from "./Layout/SidebarBottom";
-import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -73,14 +79,23 @@ function layout({ children }) {
       icon: Cog6ToothIcon,
       current: false,
     },
+    {
+      name: "Notes",
+      href: "/dashboard/notes",
+      icon: Cog6ToothIcon,
+      current: false,
+    },
   ]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser] = useState("");
+
   const [path, setPath] = useState();
   const router = useRouter();
 
   const path1 = usePathname();
+
+  const dispatch = useDispatch();
+  const { user, loading, error } = useSelector((state) => state.user);
 
   const sidebarClick = (e, itemname) => {
     e.preventDefault();
@@ -89,8 +104,6 @@ function layout({ children }) {
   };
 
   useEffect(() => {
-    console.log(path1, "path useEffect");
-
     if (path1 !== path) {
       setPath(path1);
     }
@@ -98,28 +111,22 @@ function layout({ children }) {
 
   useEffect(() => {
     onAuthStateChanged(auth, async (authUser) => {
+      dispatch(getUserRequest());
       if (authUser) {
         try {
           const userInfo = await getUserFromDb(authUser);
-
-          setUser(userInfo);
+          dispatch(getUserSuccess(userInfo));
         } catch (error) {
+          dispatch(getUserFailure(error));
           console.log(error, "error line98");
         }
       }
-
-      // if (!user) {
-      //   // User is signed out
-      //   // ...
-      //   router.push("/");
-      //   //   console.log("user is logged out");
-      // }
     });
   }, []);
 
   return (
     <>
-    <Script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIOxB7XBVlzjuseYy2jlHAEVnWgDLVbWY&libraries=places" />
+      <Script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIOxB7XBVlzjuseYy2jlHAEVnWgDLVbWY&libraries=places" />
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -176,11 +183,7 @@ function layout({ children }) {
                   {/* Sidebar component, swap this element with another sidebar if you like */}
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                     <div className="flex h-16 shrink-0 items-center">
-                      <img
-                        className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                        alt="Your Company"
-                      />
+                      <Logo />
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -233,7 +236,7 @@ function layout({ children }) {
         />
 
         <div className="lg:pl-72">
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 w-full">
             <button
               type="button"
               className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -248,24 +251,33 @@ function layout({ children }) {
               className="h-6 w-px bg-gray-200 lg:hidden"
               aria-hidden="true"
             />
-
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form className="relative flex flex-1" action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only">
-                  Search
-                </label>
+            <div className="flex flex-1 items-center w-full self-stretch">
+              <div className="font-poppins pt-1">
+                <div className="top font-poppins text-sm text-gray-500">
+                  Hello, {user ? user.user_first_name : ""} 👋
+                </div>
+                <div className="font-bold text-lg">Welcome Back</div>
+              </div>
+              <div className="hidden md:flex md:w-[15rem] lg:w-[30rem] bg-gray-200/80 rounded-full relative pl-10  items-center ml-10">
                 <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                  className="pointer-events-none absolute inset-y-0 left-4 h-full w-6 text-gray-400"
                   aria-hidden="true"
                 />
+
+                <div className="h-5 w-0.5 bg-gray-300 mx-2"></div>
                 <input
                   id="search-field"
-                  className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                  autoComplete="off"
+                  className=" w-full bg-transparent border-0 outline-none border-gray-300 focus:border-0 focus:bg-transparent focus:outline-none p-2 rounded-md focus:ring-0 appearance-none focus:appearance-none"
                   placeholder="Search..."
-                  type="search"
+                  type="text"
                   name="search"
+                  style={{ appearance: "none" }}
                 />
-              </form>
+              </div>
+            </div>
+
+            <div className="flex gap-x-4  lg:gap-x-6  ">
               <div className="flex items-center gap-x-4 lg:gap-x-6">
                 <button
                   type="button"
@@ -295,7 +307,7 @@ function layout({ children }) {
                         className="ml-4 text-sm font-semibold leading-6 text-gray-900"
                         aria-hidden="true"
                       >
-                        {user ? user.user_first_name : ""}
+                        
                       </span>
                       <ChevronDownIcon
                         className="ml-2 h-5 w-5 text-gray-400"
@@ -335,8 +347,10 @@ function layout({ children }) {
             </div>
           </div>
 
-          <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+          <main
+            className=" bg-[#4c4adc20] py-10 max-h-full min-h-screen"
+          >
+            <div className="px-4 sm:px-6 lg:px-8 ">{children}</div>
           </main>
         </div>
       </div>
@@ -345,5 +359,3 @@ function layout({ children }) {
 }
 
 export default layout;
-
-

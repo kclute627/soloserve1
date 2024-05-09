@@ -7,9 +7,12 @@ import {
   getClientFromDB,
   getMatchingClientsFromDb,
 } from "../../../firebase/firebase";
+import { useDispatch, useSelector } from "react-redux";
 import ClientInfo from "../newjob/ClientInfo/ClientInfo";
-import ProcessServer from "./ClientInfo/ProcessServer";
+import ProcessServer from "./ProcessServer/ProcessServer";
 import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput";
+import CourtInformation from "./Case/CaseInformation";
+import Devider from "../../../components/Devider";
 
 function Newjob() {
   const [user, setUser] = useState(null);
@@ -39,13 +42,37 @@ function Newjob() {
       phoneNumber: "",
     },
   });
+  const [contractInformation, setContractInformation] = useState({
+    sendLink: false,
+    contractorDisplayName: "",
+    contractor_address: {
+      street: "",
+      suite: "",
+      city: "",
+      state: "",
+      zip: "",
+      lat: "",
+      lng: "",
+      googleMapLink: "",
+    },
+    website: "",
+    contact: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+    },
+  });
+
+  // employee / contractor
+  const [serverTypeSelect, setServerTypeSelect] = useState("employee");
 
   useEffect(() => {
     onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         try {
           const userInfo = await getUserFromDb(authUser);
-          console.log(user);
+
           setUser(userInfo, "USER");
         } catch (error) {
           console.log(error, "error line98");
@@ -58,6 +85,7 @@ function Newjob() {
     if (text.length > 2) {
       try {
         const matchingArray = await getMatchingClientsFromDb(text, user);
+
         return matchingArray;
       } catch (error) {
         console.log(error);
@@ -77,7 +105,6 @@ function Newjob() {
 
     // Check if the file is found
     if (index !== -1) {
-      console.log(e.target.value);
       const newDisplayName = e.target.value;
 
       // Create a new array with updated display name
@@ -110,10 +137,8 @@ function Newjob() {
         clientInformation.contact.lastName,
         clientInformation.website
       );
-      console.log(newClient, "new clienttt");
 
       const data = await getClientFromDB(newClient);
-      console.log(data);
 
       setSelectedClientInfo(data);
       setSelectedClient(true);
@@ -132,24 +157,40 @@ function Newjob() {
   return (
     <div>
       <form action="">
-        <ServiceDocumentInput
-          selectedFiles={selectedFiles}
-          setSelectedFiles={setSelectedFiles}
-          handleFileDisplayNameChange={handleFileDisplayNameChange}
-          handleDeleteFile={handleDeleteFile}
+        <div className="p-5 bg-white shadow-lg rounded-lg h-max ">
+          <ServiceDocumentInput
+            selectedFiles={selectedFiles}
+            setSelectedFiles={setSelectedFiles}
+            handleFileDisplayNameChange={handleFileDisplayNameChange}
+            handleDeleteFile={handleDeleteFile}
+          />
+        </div>
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <ClientInfo
+            clientInformation={clientInformation}
+            setClientInformation={setClientInformation}
+            handleAddNewClient={handleAddNewClient}
+            selectedClient={selectedClient}
+            selectedClientInfo={selectedClientInfo}
+            handleClientSuggestions={handleClientSuggestions}
+            handleSelectedClient={handleSelectedClient}
+            setSelectedClient={setSelectedClient}
+            setSelectedClientInfo={setSelectedClientInfo}
+          />
+         
+        </div>
+        <div className="">Due Date Slider</div>
+
+        <ProcessServer
+          contractInformation={contractInformation}
+          setContractInformation={setContractInformation}
+          setServerTypeSelect={setServerTypeSelect}
+          serverTypeSelect={serverTypeSelect}
         />
-        <ClientInfo
-          clientInformation={clientInformation}
-          setClientInformation={setClientInformation}
-          handleAddNewClient={handleAddNewClient}
-          selectedClient={selectedClient}
-          selectedClientInfo={selectedClientInfo}
-          handleClientSuggestions={handleClientSuggestions}
-          handleSelectedClient={handleSelectedClient}
-          setSelectedClient={setSelectedClient}
-          setSelectedClientInfo={setSelectedClientInfo}
-        />
-        <ProcessServer />
+        <div className="pt-10">
+          <Devider />
+        </div>
+        <CourtInformation />
       </form>
     </div>
   );

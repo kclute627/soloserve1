@@ -30,7 +30,7 @@ function InputForm({
           onChange={onChange}
           autoComplete={autoComplete}
           required={required}
-          className={classNameInput}
+          className={`${classNameInput} ${type === "text" ? `input2`: ""}`}
           placeholder={placeHolder || ""}
         />
       </div>

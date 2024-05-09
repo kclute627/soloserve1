@@ -1,27 +1,49 @@
-/// do some checking here
 "use client";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useSession } from "next-auth/react";
+
+import {
+  getUserSuccess,
+  getUserFailure,
+  getUserRequest,
+} from "./Redux/actions";
+import { Provider, useDispatch, useSelector } from "react-redux";
+
 import { redirect, useRouter } from "next/navigation";
-import { auth } from "./firebase/firebase";
+import { auth, getUserFromDb } from "./firebase/firebase";
 import { useEffect, useState } from "react";
 import Landingpage from "./LandingPage";
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { user, loading, error } = useSelector((state) => state.user);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
+      dispatch(getUserRequest());
       if (user && user.emailVerified) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
-        router.push("/dashboard");
-        // ...
-        console.log("uid", uid);
+        try {
+          const userData = await getUserFromDb(user);
+          dispatch(getUserSuccess(userData));
+          router.push("/dashboard");
+
+          console.log("uid", uid);
+        } catch (error) {
+          dispatch(getUserFailure(error));
+        }
       }
       if (user && user.emailVerified == false) {
-        router.push("/signup");
+        const uid = user.uid;
+        try {
+          const userData = await getUserFromDb(user);
+          console.log(uid)
+          dispatch(getUserSuccess(userData));
+          router.push("/signup");
+        } catch (error) {
+          dispatch(getUserFailure(error));
+        }
+        
       } else {
         // User is signed out
         // ...

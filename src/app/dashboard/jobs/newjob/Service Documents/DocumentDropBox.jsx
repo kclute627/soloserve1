@@ -1,54 +1,73 @@
-"use client"
+"use client";
 
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-function DocumentDropBox({handleDrop, handleDragOver, handleDragEnter, handleDragLeave, handleFileSelect}) {
-    return (
-        <div>
-            <label
-            htmlFor="cover-photo"
-            className="block text-lg md:text-2xl font-bold leading-6 text-gray-900"
-          >
-            Service Documents
-          </label>
-          <div
-            className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
+function DocumentDropBox({
+  handleDrop,
+  handleDragOver,
+  handleDragEnter,
+  handleDragLeave,
+  handleFileSelect,
+}) {
+  return (
+    <div>
+      <label
+        htmlFor="cover-photo"
+        className="block text-lg md:text-2xl font-bold leading-6 text-gray-900"
+      >
+        Service Documents
+      </label>
+      <div
+        className="mt-2 flex justify-center rounded-lg border-[3px] border-spacing-3 border-dashed border-[#4D4ADC33] px-6 py-10"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+      >
+        <div className="text-center">
+          <div className="flex justify-center">
+            <svg
+              width="56"
+              height="56"
+              viewBox="0 0 56 56"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-            <div className="text-center">
-              <PhotoIcon
-                className="mx-auto h-12 w-12 text-gray-300"
-                aria-hidden="true"
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M28 2.91663C28.2527 2.91647 28.5024 2.97103 28.732 3.07656C28.9616 3.18209 29.1656 3.33608 29.33 3.52796L36.33 11.6946C36.632 12.0474 36.7815 12.5056 36.7456 12.9686C36.7097 13.4316 36.4914 13.8613 36.1387 14.1633C35.7859 14.4653 35.3277 14.6148 34.8647 14.5789C34.4017 14.543 33.972 14.3247 33.67 13.972L29.75 9.39863V35C29.75 35.4641 29.5656 35.9092 29.2374 36.2374C28.9092 36.5656 28.4641 36.75 28 36.75C27.5359 36.75 27.0907 36.5656 26.7626 36.2374C26.4344 35.9092 26.25 35.4641 26.25 35V9.39629L22.33 13.972C22.1805 14.1466 21.998 14.2901 21.793 14.3943C21.588 14.4984 21.3645 14.5611 21.1353 14.5789C20.906 14.5967 20.6756 14.5691 20.457 14.4978C20.2384 14.4265 20.036 14.3128 19.8613 14.1633C19.6867 14.0138 19.5432 13.8313 19.439 13.6263C19.3349 13.4213 19.2721 13.1978 19.2544 12.9686C19.2366 12.7393 19.2642 12.5089 19.3355 12.2903C19.4068 12.0717 19.5205 11.8693 19.67 11.6946L26.67 3.52796C26.8344 3.33608 27.0384 3.18209 27.268 3.07656C27.4976 2.97103 27.7473 2.91647 28 2.91663ZM16.324 19.2546C16.7881 19.2521 17.2342 19.4342 17.5642 19.7606C17.8941 20.087 18.0808 20.5312 18.0833 20.9953C18.0858 21.4594 17.9038 21.9055 17.5774 22.2355C17.2509 22.5654 16.8068 22.7521 16.3427 22.7546C13.7923 22.7686 11.984 22.834 10.6097 23.086C9.28899 23.331 8.52132 23.7206 7.95432 24.2876C7.30799 24.934 6.88799 25.8416 6.65699 27.5543C6.42132 29.316 6.41666 31.6516 6.41666 35V37.3333C6.41666 40.684 6.42132 43.0196 6.65699 44.7813C6.88799 46.494 7.31032 47.3993 7.95432 48.048C8.60066 48.692 9.50599 49.112 11.221 49.343C12.9803 49.581 15.3183 49.5833 18.6667 49.5833H37.3333C40.6817 49.5833 43.0173 49.581 44.7813 49.343C46.494 49.112 47.3993 48.692 48.0457 48.0456C48.692 47.3993 49.112 46.494 49.343 44.7813C49.5787 43.0196 49.5833 40.684 49.5833 37.3333V35C49.5833 31.6516 49.5787 29.316 49.343 27.552C49.112 25.8416 48.6897 24.934 48.0457 24.2876C47.4763 23.7206 46.711 23.331 45.3903 23.086C44.016 22.834 42.2077 22.7686 39.6573 22.7546C39.4275 22.7534 39.2002 22.7069 38.9883 22.6178C38.7765 22.5288 38.5843 22.3988 38.4226 22.2355C38.261 22.0721 38.1331 21.8785 38.0463 21.6657C37.9595 21.4529 37.9154 21.2251 37.9167 20.9953C37.9179 20.7655 37.9644 20.5382 38.0534 20.3263C38.1425 20.1145 38.2724 19.9222 38.4358 19.7606C38.5992 19.599 38.7928 19.4711 39.0056 19.3843C39.2184 19.2975 39.4462 19.2534 39.676 19.2546C42.2007 19.2686 44.303 19.3293 46.0227 19.6443C47.7913 19.971 49.2963 20.5893 50.5213 21.8143C51.926 23.2166 52.528 24.9876 52.8127 27.0876C53.0833 29.1083 53.0833 31.682 53.0833 34.8716V37.4616C53.0833 40.6536 53.0833 43.225 52.8127 45.248C52.528 47.348 51.926 49.1166 50.5213 50.5213C49.1167 51.926 47.348 52.528 45.248 52.8126C43.225 53.0833 40.6513 53.0833 37.4617 53.0833H18.5383C15.3487 53.0833 12.775 53.0833 10.752 52.8126C8.65199 52.5303 6.88332 51.926 5.47866 50.5213C4.07399 49.1166 3.47199 47.348 3.18966 45.248C2.91666 43.225 2.91666 40.6513 2.91666 37.4616V34.8716C2.91666 31.682 2.91666 29.1083 3.18966 27.0853C3.46966 24.9853 4.07632 23.2166 5.47866 21.812C6.70366 20.5893 8.20866 19.9686 9.97732 19.6443C11.697 19.3293 13.7993 19.2686 16.324 19.2546Z"
+                fill="#4D4ADC"
               />
-              <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                <label
-                  htmlFor="file-upload"
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragEnter={handleDragEnter}
-                  onDragLeave={handleDragLeave}
-                  className=" cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                >
-                  <span>Upload Service Files</span>
-                  <input
-                    id="file-upload"
-                    name="file-upload"
-                    multiple
-                    type="file"
-                    className="sr-only"
-                    onChange={handleFileSelect}
-                  />
-                </label>
-                <p className="pl-1">or drag and drop</p>
-              </div>
-              <p className="text-xs leading-5 text-gray-600">PDF, JPG</p>
-            </div>
+            </svg>
           </div>
+
+          <div className="mt-4 flex text-sm leading-6 text-gray-600">
+            <label
+              htmlFor="file-upload"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              className=" cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+            >
+              <span>Upload Service Files</span>
+              <input
+                id="file-upload"
+                name="file-upload"
+                multiple
+                type="file"
+                className="sr-only"
+                onChange={handleFileSelect}
+              />
+            </label>
+            <p className="pl-1">or drag and drop</p>
+          </div>
+          <p className="text-xs leading-5 text-gray-600">PDF, JPG</p>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
-export default DocumentDropBox
+export default DocumentDropBox;

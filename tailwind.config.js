@@ -14,7 +14,10 @@ module.exports = {
       },
       colors: {
         primaryGreen: "rgba(90,133,95,1)", 
-      }
+      },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [

@@ -38,6 +38,7 @@ function ClientInfo({
 
     // here is where I need to search the Data base for existing clients
     try {
+
       const matchingArrayData = await handleClientSuggestions(ref);
       setMatchingArray(matchingArrayData);
     } catch (error) {}
@@ -52,18 +53,17 @@ function ClientInfo({
   const handleRemoveClient = (e) => {
     e.preventDefault();
 
-    console.log("33");
     setSelectedClient(false);
     setSelectedClientInfo(null);
     const syntheticEvent = { target: { value: "" } };
     handleClient(syntheticEvent);
     setMatchingArray([])
-    //clear input
+
   };
   return (
     <>
       <div>
-        <div className="mt-10 ">
+        <div className="mt-4 ">
           <div className="flex w-full">
             <div className="w-full md:w-2/3 ">
               <label

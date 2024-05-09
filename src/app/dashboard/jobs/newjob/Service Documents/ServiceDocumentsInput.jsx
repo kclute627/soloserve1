@@ -1,5 +1,10 @@
 "use client";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowPathRoundedSquareIcon,
+  BanknotesIcon,
+  PlusIcon,
+  PrinterIcon,
+} from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import UploadProgress from "./UploadProgress";
@@ -7,6 +12,7 @@ import DocuemntDropBox from "./DocumentDropBox";
 import FileComponent from "./FileComponent";
 import AddDocumentButton from "./AddDocumentButton";
 import { pdfjs } from "react-pdf";
+import { SparklesIcon } from "@heroicons/react/24/outline";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 function ServiceDocumentUpload({
@@ -46,7 +52,7 @@ function ServiceDocumentUpload({
     const fileArray = await Promise.all(
       Array.from(files).map(async (file) => {
         const pageNum = await getPageNumber(file);
-
+        
         return {
           file: file,
           displayName: file.name,
@@ -61,10 +67,10 @@ function ServiceDocumentUpload({
   };
 
   const handleAddNoFile = (e) => {
-    if(e.key == "Enter"){
-       e.preventDefault();
+    if (e.key == "Enter") {
+      e.preventDefault();
 
-       return
+      return;
     }
     e.preventDefault();
     const newArrayItem = {
@@ -120,20 +126,22 @@ function ServiceDocumentUpload({
     }, 2000);
   };
 
-
-  
-
   return (
-    <div className="space-y-10 divide-y divide-gray-900/10 ">
+    <div className=" ">
       <div className="flex">
         <div className="w-full md:w-2/3 ">
-          
-          <DocuemntDropBox handleDrop={handleDrop} handleDragOver={handleDragOver} handleDragEnter={handleDragEnter} handleDragLeave={handleDragLeave} handleFileSelect={handleFileSelect}/>
+          <DocuemntDropBox
+            handleDrop={handleDrop}
+            handleDragOver={handleDragOver}
+            handleDragEnter={handleDragEnter}
+            handleDragLeave={handleDragLeave}
+            handleFileSelect={handleFileSelect}
+          />
           {selectedFiles.length > 0 ? (
-            <div className="flex flex-wrap gap-4 py-4">
+            <div className={`flex flex-wrap gap-4 py-4 relative ${selectedFiles.length <= 2 ? 'pb-[15rem]': ""}`}>
               {selectedFiles.map((file, i) => {
                 return (
-                  <div className={`relative z-[${1000 - i}]`} key={file.id}>
+                  <div className={`relative `} key={file.id}>
                     <FileComponent
                       file={file}
                       handleFileDisplayNameChange={handleFileDisplayNameChange}
@@ -147,10 +155,44 @@ function ServiceDocumentUpload({
                   </div>
                 );
               })}
+              <div className="absolute right-0 top-0">
+                <div className="flex flex-col justify-start items-center w-[15rem] ">
+                  <div className="h-16 w-16 text-white bg-indigo-600 mt-4 rounded-full flex  justify-center items-center mb-2">
+                    <div className="h-10 w-10 text-white m-auto  ">
+                      <SparklesIcon />
+                    </div>
+                  </div>
+                  <div className="">
+                    <div className="">AI Data Entry 28 Credits Left</div>
+                    <div className=""></div>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-start items-center w-[15rem]">
+                  <div className="h-16 w-16 text-white bg-indigo-600 mt-4 rounded-full flex  justify-center items-center mb-2">
+                    <div className="h-10 w-10 text-white m-auto  ">
+                      <ArrowPathRoundedSquareIcon />
+                    </div>
+                  </div>
+                  <div className="">
+                    <div className="">Merge Documents into one PDF</div>
+                    <div className=""></div>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-start items-center w-[15rem] pb-10">
+                  <div className="h-16 w-16 text-white bg-indigo-600 mt-4 rounded-full flex  justify-center items-center mb-2">
+                    <div className="h-10 w-10 text-white m-auto  ">
+                      <BanknotesIcon />
+                    </div>
+                  </div>
+                  <div className="">
+                    <div className="">Add 54 Pages to Invoice</div>
+                    <div className=""></div>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <AddDocumentButton handleAddNoFile={handleAddNoFile} />
-            
           )}
 
           {uploadProgress > 0 && (

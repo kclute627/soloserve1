@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-function GoogleAuto2({ address, setAddress }) {
+function GoogleAutoContractor({ address, setAddress, title }) {
   const addressRef = useRef(null);
   let autocomplete;
 
@@ -119,11 +119,11 @@ function GoogleAuto2({ address, setAddress }) {
         </div>
         <div className="mt-2">
           <input
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primaryGreen sm:text-sm sm:leading-6"
+            className="input2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primaryGreen sm:text-sm sm:leading-6"
             id="ship-address"
             type="text"
             value={
-              address.client_address.street ? address.client_address.street : ""
+              address.contractor_address.street ? address.contractor_address.street : ""
             }
             autoComplete="off"
             onFocus={onFocus}
@@ -137,4 +137,4 @@ function GoogleAuto2({ address, setAddress }) {
   );
 }
 
-export default GoogleAuto2;
+export default GoogleAutoContractor;

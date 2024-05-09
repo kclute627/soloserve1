@@ -20,7 +20,7 @@ function AddDocumentButton({ handleAddNoFile }) {
       >
         <div className="h-10 w-10 text-white m-auto  ">
           <PlusIcon />
-        </div> 
+        </div>
       </div>
       <div className="">
         <div className="">Add Service Documents</div>
