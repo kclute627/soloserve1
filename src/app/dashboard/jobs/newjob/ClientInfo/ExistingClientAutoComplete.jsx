@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 function ExistingClientAutoComplete({ data, handleSelectedClient }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedClient, setSelectedClient] = useState(null);
+  
 
   const handleKeyDown = (event) => {
     if (event.key === "ArrowUp" && selectedIndex > 0) {
@@ -29,7 +29,7 @@ function ExistingClientAutoComplete({ data, handleSelectedClient }) {
   }, [selectedIndex]);
 
   return (
-    <div className="absolute w-full md:w-2/3 left-0 z-[99] bg-gray-200 rounded-sm">
+    <div className={`absolute w-full md:w-2/3 left-0 z-[99] bg-gray-200 rounded-sm `}>
       {data.map((data, i) => (
         <ClientBox
           data={data}
@@ -56,7 +56,7 @@ const ClientBox = ({ data, i, isSelected, handleSelectedClient }) => {
           : isSelected
           ? "bg-blue-200"
           : ""
-      }`}
+      } ${data.id !== 4 ? "cursor-pointer" : ""}`}
       onClick={ data.name !== "No Results Found" ? ()=>handleSelectedClient(data) : null}
     >
       <div className="text-xl font-bold mb-2">{data.name}</div>

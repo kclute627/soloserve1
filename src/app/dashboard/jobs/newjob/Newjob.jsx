@@ -24,8 +24,6 @@ import Devider from "../../../components/Devider";
 function Newjob() {
   /// new client
 
- 
-
   const [contractInformation, setContractInformation] = useState({
     sendLink: false,
     contractorDisplayName: "",
@@ -100,7 +98,6 @@ function Newjob() {
   };
 
   const handleAddNewClient2 = async (event) => {
- 
     const newClient = {
       user: user,
       clientDisplayName: newClientInfo.clientDisplayName,
@@ -109,14 +106,14 @@ function Newjob() {
       email: newClientInfo.contact.email,
       firstName: newClientInfo.contact.firstName,
       lastName: newClientInfo.contact.lastName,
-      website: newClientInfo.website
-    }
-    dispatch(fetchClientInfo(newClient))
-  }
+      website: newClientInfo.website,
+    };
+    dispatch(fetchClientInfo(newClient));
+  };
 
-  const handleAddNewClient = async() =>  {
-    let data = null
-    let newDataStructure = null
+  const handleAddNewClient = async () => {
+    let data = null;
+    let newDataStructure = null;
     try {
       const newClient = await createNewClientinDb(
         user,
@@ -131,29 +128,24 @@ function Newjob() {
 
       await getClientFromDB(newClient).then((dispatch) => {
         dispatch(setSelectedClientInfo(dispatch));
-      })
-      console.log(data)
+      });
+      console.log(data);
       newDataStructure = {
         id: data.id,
         clientDisplayName: data.name,
         clientAddress: [...data.addresses],
         website: data.website,
         contact: [...data.contacts],
-
-      }
-      console.log(newDataStructure)
-
-     
+      };
+      console.log(newDataStructure);
     } catch (error) {
       console.log(error);
     }
 
-    if(newDataStructure != null){
-      setTimeout(()=>{
-        
-      }, 1000)
-   
-    dispatch(setSelectedClient(true));
+    if (newDataStructure != null) {
+      setTimeout(() => {}, 1000);
+
+      dispatch(setSelectedClient(true));
     }
   };
 
@@ -164,8 +156,8 @@ function Newjob() {
 
   const handleSelectedClient = async (client) => {
     try {
-      setSelectedClientInfo(client);
-      setSelectedClient(true);
+      dispatch(setSelectedClientInfo(client));
+      dispatch(setSelectedClient(true));
     } catch (error) {}
   };
 
