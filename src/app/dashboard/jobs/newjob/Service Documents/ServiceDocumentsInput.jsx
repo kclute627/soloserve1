@@ -6,22 +6,39 @@ import {
   PrinterIcon,
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
+
+import { Provider, useDispatch, useSelector } from "react-redux";
+import {
+  setDocumentUploadProgrssNumFiles,
+  setDocumentUploadProgress,
+  setDocumentUploadProgrssCurrentFile,
+  clearProgress,
+  setSelectedFiles,
+} from "../../../../Redux/actions";
 import { v4 as uuidv4 } from "uuid";
 import UploadProgress from "./UploadProgress";
 import DocuemntDropBox from "./DocumentDropBox";
 import FileComponent from "./FileComponent";
 import AddDocumentButton from "./AddDocumentButton";
 import { pdfjs } from "react-pdf";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { SparklesIcon } from "@heroicons/react/24/outline";
+import { setFileinStorage } from "../../../../firebase/firebase";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 function ServiceDocumentUpload({
-  setSelectedFiles,
-  selectedFiles,
   handleFileDisplayNameChange,
   handleDeleteFile,
 }) {
-  const [uploadProgress, setUploadProgress] = useState(0);
+  // const [uploadProgress, setUploadProgress] = useState(0);
+
+  const { uploadProgress, newJobInformation } = useSelector(
+    (state) => state.newJob
+  );
+  const { selectedFiles } = newJobInformation;
+  const [parent] = useAutoAnimate();
+
+  const dispatch = useDispatch();
 
   const getPageNumber = async (file) => {
     return new Promise((resolve, reject) => {
@@ -49,21 +66,55 @@ function ServiceDocumentUpload({
   const handleFileSelect = async (e) => {
     const files = e.target.files;
 
-    const fileArray = await Promise.all(
-      Array.from(files).map(async (file) => {
-        const pageNum = await getPageNumber(file);
-        
-        return {
-          file: file,
-          displayName: file.name,
-          id: uuidv4(),
-          numPages: pageNum ? pageNum : "NA",
-        };
-      })
-    );
+    const newFunc = (progress) => {
+      dispatch(setDocumentUploadProgress(progress));
+    };
 
-    setSelectedFiles((cur) => [...cur, ...fileArray]);
-    handleUpload(fileArray.map((cur) => cur.file));
+    dispatch(setDocumentUploadProgrssNumFiles(files.length));
+    try {
+      const fileArray = await Promise.all(
+        /// set number of files
+
+        Array.from(files).map(async (file, i) => {
+          const pageNum = await getPageNumber(file);
+          const url = await setFileinStorage(file.name, file, newFunc);
+
+
+
+          return {
+            file: { ...file },
+            displayName: file.name,
+            id: uuidv4(),
+            url: url,
+            numPages: pageNum ? pageNum : "NA",
+          };
+        })
+      );
+
+     dispatch(
+        setSelectedFiles(fileArray)
+      );
+
+      // Wait for all file uploads and updates to finish before proceeding
+
+      
+
+     
+     
+    } catch (error) {
+      console.log(error)
+    }
+
+
+
+    clearProgress()
+   
+  };
+
+  const clearProgress = () => {
+    setTimeout(() => {
+      dispatch({ type: 'CLEAR_PROGRESS' }); // Dispatch an action to clear progress
+    }, 1500);
   };
 
   const handleAddNoFile = (e) => {
@@ -79,8 +130,10 @@ function ServiceDocumentUpload({
       id: uuidv4(),
       numPages: 0,
     };
-
-    setSelectedFiles((cur) => [...cur, newArrayItem]);
+    dispatch(
+      setSelectedFiles([newArrayItem])
+    );
+    // setSelectedFiles((cur) => [...cur, newArrayItem]);
   };
   const handleDrop = (e) => {
     e.preventDefault();
@@ -102,30 +155,6 @@ function ServiceDocumentUpload({
     // Remove any visual indication when drag leaves
   };
 
-  const handleUpload = (files) => {
-    const totalSize = files.reduce((acc, file) => {
-      return acc + file.size;
-    }, 0);
-
-    let uploadSize = 0;
-
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        uploadSize += file.size;
-        const progress = Math.round((uploadSize / totalSize) * 100);
-
-        setUploadProgress(progress);
-      };
-
-      reader.readAsDataURL(file);
-    });
-
-    setTimeout(() => {
-      setUploadProgress(0);
-    }, 2000);
-  };
-
   return (
     <div className=" ">
       <div className="flex">
@@ -138,8 +167,13 @@ function ServiceDocumentUpload({
             handleFileSelect={handleFileSelect}
           />
           {selectedFiles.length > 0 ? (
-            <div className={`flex flex-wrap gap-4 py-4 relative ${selectedFiles.length <= 2 ? 'pb-[15rem]': ""}`}>
-              {selectedFiles.map((file, i) => {
+            <div
+              className={`flex flex-wrap gap-x-2 gap-y-4 py-4 relative ${
+                selectedFiles.length <= 2 ? "pb-[15rem]" : ""
+              }`}
+              ref={parent}
+            >
+              {newJobInformation.selectedFiles.map((file, i) => {
                 return (
                   <div className={`relative `} key={file.id}>
                     <FileComponent
@@ -195,8 +229,12 @@ function ServiceDocumentUpload({
             <AddDocumentButton handleAddNoFile={handleAddNoFile} />
           )}
 
-          {uploadProgress > 0 && (
-            <UploadProgress uploadProgress={uploadProgress} />
+          {uploadProgress.uploadProgress !== 0 && (
+            <UploadProgress
+              className={`upload-progress ${
+                uploadProgress.uploadProgress !== 0 ? "show" : ""
+              }`}
+            />
           )}
         </div>
       </div>

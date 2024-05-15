@@ -8,6 +8,13 @@ import {
   getMatchingClientsFromDb,
 } from "../../../firebase/firebase";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteFile,
+  fetchClientInfo,
+  getUserSuccess,
+  setSelectedClient,
+  setSelectedClientInfo,
+} from "../../../Redux/actions";
 import ClientInfo from "../newjob/ClientInfo/ClientInfo";
 import ProcessServer from "./ProcessServer/ProcessServer";
 import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput";
@@ -15,33 +22,10 @@ import CourtInformation from "./Case/CaseInformation";
 import Devider from "../../../components/Devider";
 
 function Newjob() {
-  const [user, setUser] = useState(null);
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
   /// new client
-  const [selectedClient, setSelectedClient] = useState(false);
-  const [selectedClientInfo, setSelectedClientInfo] = useState(null);
-  const [clientInformation, setClientInformation] = useState({
-    clientRef: "",
-    clientDisplayName: "",
-    client_address: {
-      street: "",
-      suite: "",
-      city: "",
-      state: "",
-      zip: "",
-      lat: "",
-      lng: "",
-      googleMapLink: "",
-    },
-    website: "",
-    contact: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-    },
-  });
+
+ 
+
   const [contractInformation, setContractInformation] = useState({
     sendLink: false,
     contractorDisplayName: "",
@@ -67,19 +51,10 @@ function Newjob() {
   // employee / contractor
   const [serverTypeSelect, setServerTypeSelect] = useState("employee");
 
-  useEffect(() => {
-    onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        try {
-          const userInfo = await getUserFromDb(authUser);
-
-          setUser(userInfo, "USER");
-        } catch (error) {
-          console.log(error, "error line98");
-        }
-      }
-    });
-  }, []);
+  const dispatch = useDispatch();
+  const { newJobInformation } = useSelector((state) => state.newJob);
+  const newClientInfo = useSelector((state) => state.newClient);
+  const { user } = useSelector((state) => state.user);
 
   const handleClientSuggestions = async (text) => {
     if (text.length > 2) {
@@ -95,8 +70,10 @@ function Newjob() {
 
   const handleDeleteFile = (e, id) => {
     e.preventDefault();
-    const newFiles = selectedFiles.filter((cur) => cur.id !== id);
-    setSelectedFiles(newFiles);
+    const newFiles = newJobInformation.selectedFiles.filter(
+      (cur) => cur.id !== id
+    );
+    dispatch(deleteFile(newFiles));
   };
 
   const handleFileDisplayNameChange = (e, id) => {
@@ -117,34 +94,72 @@ function Newjob() {
       // Create a new array with the updated file at the correct index
       const updatedSelectedFiles = [...selectedFiles];
       updatedSelectedFiles[index] = updatedFileArray;
-
-      // Set the state with the updated array
-      setSelectedFiles(updatedSelectedFiles);
     } else {
       console.error("File not found");
     }
   };
 
-  const handleAddNewClient = async () => {
+  const handleAddNewClient2 = async (event) => {
+ 
+    const newClient = {
+      user: user,
+      clientDisplayName: newClientInfo.clientDisplayName,
+      client_address: newClientInfo.client_address,
+      phoneNumber: newClientInfo.contact.phoneNumber,
+      email: newClientInfo.contact.email,
+      firstName: newClientInfo.contact.firstName,
+      lastName: newClientInfo.contact.lastName,
+      website: newClientInfo.website
+    }
+    dispatch(fetchClientInfo(newClient))
+  }
+
+  const handleAddNewClient = async() =>  {
+    let data = null
+    let newDataStructure = null
     try {
       const newClient = await createNewClientinDb(
         user,
-        clientInformation.clientDisplayName,
-        clientInformation.client_address,
-        clientInformation.contact.phoneNumber,
-        clientInformation.contact.email,
-        clientInformation.contact.firstName,
-        clientInformation.contact.lastName,
-        clientInformation.website
+        newClientInfo.clientDisplayName,
+        newClientInfo.client_address,
+        newClientInfo.contact.phoneNumber,
+        newClientInfo.contact.email,
+        newClientInfo.contact.firstName,
+        newClientInfo.contact.lastName,
+        newClientInfo.website
       );
 
-      const data = await getClientFromDB(newClient);
+      await getClientFromDB(newClient).then((dispatch) => {
+        dispatch(setSelectedClientInfo(dispatch));
+      })
+      console.log(data)
+      newDataStructure = {
+        id: data.id,
+        clientDisplayName: data.name,
+        clientAddress: [...data.addresses],
+        website: data.website,
+        contact: [...data.contacts],
 
-      setSelectedClientInfo(data);
-      setSelectedClient(true);
+      }
+      console.log(newDataStructure)
+
+     
     } catch (error) {
       console.log(error);
     }
+
+    if(newDataStructure != null){
+      setTimeout(()=>{
+        
+      }, 1000)
+   
+    dispatch(setSelectedClient(true));
+    }
+  };
+
+  const setSelectedClientData = async (data) => async (dispatch) => {
+    await dispatch(setSelectedClientInfo(data));
+    await dispatch(setSelectedClient(true));
   };
 
   const handleSelectedClient = async (client) => {
@@ -159,25 +174,16 @@ function Newjob() {
       <form action="">
         <div className="p-5 bg-white shadow-lg rounded-lg h-max ">
           <ServiceDocumentInput
-            selectedFiles={selectedFiles}
-            setSelectedFiles={setSelectedFiles}
             handleFileDisplayNameChange={handleFileDisplayNameChange}
             handleDeleteFile={handleDeleteFile}
           />
         </div>
         <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
           <ClientInfo
-            clientInformation={clientInformation}
-            setClientInformation={setClientInformation}
-            handleAddNewClient={handleAddNewClient}
-            selectedClient={selectedClient}
-            selectedClientInfo={selectedClientInfo}
+            handleAddNewClient={handleAddNewClient2}
             handleClientSuggestions={handleClientSuggestions}
             handleSelectedClient={handleSelectedClient}
-            setSelectedClient={setSelectedClient}
-            setSelectedClientInfo={setSelectedClientInfo}
           />
-         
         </div>
         <div className="">Due Date Slider</div>
 

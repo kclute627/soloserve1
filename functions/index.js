@@ -1,22 +1,65 @@
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
+const {Storage} = require("@google-cloud/storage");
+const { object } = require("firebase-functions/v1/storage");
 admin.initializeApp();
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
 
 
-// exports.createUserProfile = functions.auth.user().onCreate((user)=> {
-//     const userData = {
-//         user_id: user.uid,
-//         user_email: user.email
-//     };
+const storage = new Storage(); 
 
-//     return admin.firestore().collection('users').doc(user.uid).set(userData)
 
-    
-// })
+
+
+
+exports.moveFilesToLowCostStorage = functions.https.onRequest(async (request, response) => {
+    try {
+       
+        const sourceBucketName = 'authdemo-b5947.appspot.com'; // Source bucket name
+        const destinationBucketName = 'authdemo-b5947'; // Destination bucket name
+
+        const sourceBucket = storage.bucket(sourceBucketName);
+
+          // List all files in the "files" folder of the source bucket
+        const [files] = await sourceBucket.getFiles({ prefix: 'files/' });
+
+
+        // Calculate file age
+        const now = new Date();
+
+          // Iterate over each file
+          for (const file of files) {
+            // Get metadata to check creation time
+            const [metadata] = await file.getMetadata();
+            const creationTime = metadata.timeCreated;
+
+            // Calculate file age
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(now.getDate() - 30);
+
+            // Check if the file is older than 30 days
+            if (creationTime < thirtyDaysAgo) {
+                // Move the file to the destination bucket
+                const destinationBucket = storage.bucket(destinationBucketName);
+                const destinationFile = destinationBucket.file(file.name);
+                await file.move(destinationFile);
+
+                console.log(`File ${file.name} moved to ${destinationBucketName}.`);
+            }
+        }
+
+        response.status(200).send('Files moved successfully');
+    } catch (error) {
+        console.error('Error moving files:', error);
+        response.status(500).send('Error moving files');
+    }
+       
+});
+
+
+/// now I need to loop over the 30 days and put in 60 days -- run it every 15 days 
+
+
+
+
+
+/// now loop over the 60 days bucket and move to 120 day --- run every 30 days 

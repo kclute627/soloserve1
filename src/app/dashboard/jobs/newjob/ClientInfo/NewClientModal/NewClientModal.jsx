@@ -4,32 +4,29 @@ import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { RotateLoader } from "react-spinners";
 import InputForm from "../../../../../signup/Input";
-import {
-  createNewClientinDb,
-  auth,
-  getUserFromDb,
-} from "../../../../../firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import GoogleAuto2 from "../GoogleAuto2";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { handleClientInput, handleClientInput2, handleClientInput3 } from "../../../../../Redux/actions";
 
 export default function NewClientModal({
   open,
   setOpen,
   handleAddNewClient,
-  clientInformation,
-  setClientInformation,
+  
 }) {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
 
+  const dispatch = useDispatch();
+  const { newJobInformation: {clientInformation} } = useSelector((state) => state.newJob);
+  const newClientInfo = useSelector(state => state.newClient)
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     setLoading(true);
     try {
       const newClient = await handleAddNewClient();
-
-   
       
     } catch (error) {
       console.log(error)
@@ -39,48 +36,6 @@ export default function NewClientModal({
     setLoading(false);
   };
 
-  useEffect(() => {
-    onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        try {
-          const userInfo = await getUserFromDb(authUser);
-
-          setUser(userInfo);
-        } catch (error) {
-          console.log(error, "error line98");
-        }
-      }
-    });
-  }, []);
-
-  const handleInputdata = (e) => {
-
-      setClientInformation((info) => ({
-        ...info,
-        [e.target.name]: e.target.value,
-      }));
-
-    
-    
-    
-  };
-
-  const handleInputdata2 = (e) => {
-    
-    setClientInformation((info) => ({
-      ...info,
-      contact: 
-      { ...info.contact, 
-        [e.target.name]: e.target.value 
-      },
-    }));
-  };
-  const handleInputdata3 = (e) => {
-    setClientInformation((info) => ({
-      ...info,
-      client_address: { ...info.client_address, [e.target.name]: e.target.value },
-    }));
-  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -116,10 +71,9 @@ export default function NewClientModal({
                     </div>
                     <div className="">
                       <InputForm
-                        value={clientInformation.clientDisplayName}
-                        
+                        value={newClientInfo.clientDisplayName}
                         placeHolder={"Company"}
-                        onChange={handleInputdata}
+                        onChange={(e)=>dispatch(handleClientInput(e.target.name, e.target.value))}
                         label="Company Name"
                         id="clientDisplayName"
                         type="text"
@@ -130,9 +84,9 @@ export default function NewClientModal({
                     <div className="flex space-x-4">
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.firstName}
+                          value={newClientInfo.contact.firstName}
                           name="firstName"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch(handleClientInput2(e.target.name, e.target.value))}
                           label="First Name"
                           id="firstName"
                           type="text"
@@ -143,8 +97,8 @@ export default function NewClientModal({
                       </div>
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.lastName}
-                          onChange={handleInputdata2}
+                          value={newClientInfo.contact.lastName}
+                          onChange={(e)=>dispatch(handleClientInput2(e.target.name, e.target.value))}
                           label="Last Name"
                           id="lastName"
                           type="text"
@@ -157,9 +111,9 @@ export default function NewClientModal({
                     <div className="flex space-x-4">
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.email}
+                          value={newClientInfo.contact.email}
                           name="email"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch(handleClientInput2(e.target.name, e.target.value))}
                           label="Email Address"
                           id="email"
                           type="email"
@@ -170,9 +124,9 @@ export default function NewClientModal({
                       </div>
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.phoneNumber}
+                          value={newClientInfo.phoneNumber}
                           name="phoneNumber"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch(handleClientInput2(e.target.name, e.target.value))}
                           label="Phone Number"
                           id="phoneNumber"
                           type="tel"
@@ -187,12 +141,12 @@ export default function NewClientModal({
                       Company Information
                     </div>
                     <div className="flex space-x-4">
-                      <GoogleAuto2 address={clientInformation} setAddress={setClientInformation} />
+                      <GoogleAuto2 address={newClientInfo}  />
                       <div className="w-1/3">
                         <InputForm
-                          value={clientInformation.client_address.suite}
+                          value={newClientInfo.client_address.suite}
                           name="suite"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleClientInput3(e.target.name, e.target.value))}
                           label="Suite"
                           placeHolder={"Suite"}
                           id="suite"
@@ -209,9 +163,9 @@ export default function NewClientModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.client_address.city}
+                          value={newClientInfo.client_address.city}
                           name="city"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleClientInput3(e.target.name, e.target.value))}
                           label="City"
                           placeHolder={"City"}
                           id="city"
@@ -223,9 +177,9 @@ export default function NewClientModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.client_address.state}
+                          value={newClientInfo.client_address.state}
                           name="state"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleClientInput3(e.target.name, e.target.value))}
                           label="State"
                           placeHolder={"State"}
                           id="state"
@@ -237,9 +191,9 @@ export default function NewClientModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.client_address.zip}
+                          value={newClientInfo.client_address.zip}
                           name="zip"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleClientInput3(e.target.name, e.target.value))}
                           label="Zip"
                           placeHolder={"Zip"}
                           id="zip"
@@ -252,10 +206,10 @@ export default function NewClientModal({
                     <div className="flex space-x-7 mt-4">
                       <div className="w-1/3">
                         <InputForm
-                          value={clientInformation.website}
+                          value={newClientInfo.website}
                         
                           name="website"
-                          onChange={handleInputdata}
+                          onChange={(e)=>dispatch(handleClientInput(e.target.name, e.target.value))}
                           label="Website"
                           placeHolder={"Website"}
                           id="website"

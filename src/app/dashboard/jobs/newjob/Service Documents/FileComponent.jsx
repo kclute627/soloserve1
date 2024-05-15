@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { XCircleIcon } from "@heroicons/react/24/outline";
-
+import { DocumentPlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import PDFButtons from "./PdfButton"
 const commonDocuments = [
   "Summons",
   "Complaint",
@@ -64,6 +64,7 @@ const FileComponent = ({
     }
   };
 
+
   const handleSelectSuggestion = (suggestion) => {
     setInputValue(suggestion);
     // setClickedInput(i);
@@ -72,7 +73,7 @@ const FileComponent = ({
     handleFileDisplayNameChange({ target: { value: suggestion } }, file.id);
   };
   const clearDisplayName = () => {
-    console.log("clicked!!!!");
+  
     setInputValue("");
     handleFileDisplayNameChange({ target: { value: "" } }, file.id);
   };
@@ -80,7 +81,7 @@ const FileComponent = ({
     setClickedInput((prevIndex) => (prevIndex === index ? prevIndex : index));
     setBaseZ((prev) => prev + 1);
     setIndex((prevIndex) => prevIndex);
-    console.log(index, "handleZ i", clickedInput, "Clicked input ");
+
   };
   return (
     /// to do only make the dropdown open for one docuemnt
@@ -206,12 +207,8 @@ const FileComponent = ({
                 {newFile ? newFile.name : ""}
               </div>
             </div>
-            <div className="flex overflow-x-auto">
-              <div className="mr-2 text-nowrap font-bold">File Link:</div>
-              <div className="text-gray-700 text-nowrap overflow-hidden overflow-ellipsis ">
-                {newFile ? newFile.name : ""}
-              </div>
-            </div>
+            {file.url ? <PDFButtons pdfUrl={file.url} filename={file.displayName}/> : <></>}
+           
             {file.numPages == "NA" ? (
               <div className="font-bold">Page Count Error</div>
             ) : file.numPages ? (
@@ -225,8 +222,10 @@ const FileComponent = ({
         )}
 
         {i !== 0 && (
-          <div className="absolute bottom-2 right-2 justify-between -z-10">
-            <div className=""></div>
+          <div onClick={()=>{}} className="absolute bottom-2 right-2 justify-between -z-10 flex items-center space-x-1.5 text-slate-600 font-poppins font-bold">
+            <div className="h-6 w-6">
+              <DocumentPlusIcon/>
+            </div>
             <div className="">Make Main Document</div>
           </div>
         )}

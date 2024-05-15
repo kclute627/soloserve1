@@ -5,6 +5,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
 } from "@firebase/auth";
+
 import {
   getFirestore,
   addDoc,
@@ -20,6 +21,7 @@ import {
 import {getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable} from "firebase/storage"
 
 import { v4 as uuidv4 } from "uuid";
+import { setSelectedClientInfo } from "../Redux/actions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB7JabUOpZvA2gYSAPPvX9H4VZWWx_vPkQ",
@@ -42,6 +44,8 @@ const storage = getStorage()
 
 
 const date = new Date();
+
+
 
 const signUserUp = async (email, password) => {
   const user = await createUserWithEmailAndPassword(auth, email, password);
@@ -129,6 +133,7 @@ const createNewClientinDb = async (user, companyName, userInfo, phone, email, fi
     type: "client",
     id: `${clientId}`,
     name: companyName,
+    searchName: companyName.toLowerCase(),
     website,
     created_at: date.toISOString(),
     updated_at: date.toISOString(),
@@ -156,6 +161,8 @@ const getClientFromDB = async (id) => {
     const clientDoc = await getDoc(docRef)
 
     if(clientDoc.exists()){
+
+      // setSelectedClientInfo(clientDoc.data());
       return clientDoc.data()
 
     }else {
@@ -171,24 +178,33 @@ const getClientFromDB = async (id) => {
 }
 
 const getMatchingClientsFromDb = async(searchText, user) => {
+
   // Fetch clients from Firestore that match the search text
   
-  const clientsQuery = query(
-    collection(db, 'clients'),
-    where('generatedBy', '==', user.user_uid),
-    where('name', '>=', searchText),
-    where('name', '<=', searchText + '\uf8ff'),
-    limit(8) // '\uf8ff' is a placeholder for the last Unicode character
-  );
+
+    const clientsQuery = query(
+      collection(db, 'clients'),
+      where('generatedBy', '==', user.user_uid),
+      where('name', '>=', searchText),
+      where('name', '<=', searchText + '\uf8ff'),
+      limit(8) // '\uf8ff' is a placeholder for the last Unicode character
+    ); // '\uf8ff' is a placeholder for the last Unicode character
+
 
 
   try {
     const querySnapshot = await getDocs(clientsQuery);
-    const matchingClientsData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    return matchingClientsData
+    if (querySnapshot) {
+      const matchingClientsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return matchingClientsData
+
+    }else{
+      return []
+    }
+    
   } catch (error) {
     console.log(error, "line 183")
   }
@@ -199,7 +215,7 @@ const getUserFromDb = async (authUid) => {
     const docRef = doc(db, "users", authUid.uid);
     const userDoc = await getDoc(docRef);
 
-    console.log(userDoc);
+
 
     if (userDoc.exists()) {
       return userDoc.data();
@@ -226,57 +242,41 @@ const metadata = {
   contentType: 'application/pdf'
 };
 
-const setFileinStorage = async (name, file) => {
-  const storageRef = ref(storage, `pdfs/${name}`);
-  const uploadTask = uploadBytesResumable(storageRef, file, metadata)
 
+
+const setFileinStorage = (name, file, setDocumentUploadProgress) => {
   
-  // Listen for state changes, errors, and completion of the upload.
-uploadTask.on('state_changed',
-(snapshot) => {
-  // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  console.log('Upload is ' + progress + '% done');
-  switch (snapshot.state) {
-    case 'paused':
-      console.log('Upload is paused');
-      break;
-    case 'running':
-      console.log('Upload is running');
-      break;
-  }
-}, 
-(error) => {
-  // A full list of error codes is available at
-  // https://firebase.google.com/docs/storage/web/handle-errors
-  switch (error.code) {
-    case 'storage/unauthorized':
-      // User doesn't have permission to access the object
-      break;
-    case 'storage/canceled':
-      // User canceled the upload
-      break;
+  return new Promise((resolve, reject) => {
+    const storageRef = ref(storage, `files/${name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    // ...
-
-    case 'storage/unknown':
-      // Unknown error occurred, inspect error.serverResponse
-      break;
-  }
-}, 
-() => {
-  // Upload completed successfully, now we can get the download URL
-  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-    console.log('File available at', downloadURL);
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        // Upload progress
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setDocumentUploadProgress(progress)
+      },
+      (error) => {
+        // Handle errors
+        console.error('Upload error:', error);
+        reject(error);
+      },
+      () => {
+        // Upload completed successfully, get download URL
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((downloadURL) => {
+          
+            resolve(downloadURL);
+          })
+          .catch((error) => {
+       
+            reject(error);
+          });
+      }
+    );
   });
-}
-);
-  
-
-
-
-
-}
+};
 
 export {
   app,

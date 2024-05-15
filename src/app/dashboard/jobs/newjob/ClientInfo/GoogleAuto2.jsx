@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { handleClientInput3, setGoogleAddress } from "../../../../Redux/actions";
 
-function GoogleAuto2({ address, setAddress }) {
+function GoogleAuto2({ address }) {
   const addressRef = useRef(null);
   let autocomplete;
+
+  const dispatch = useDispatch();
+ 
+  const newClientInfo = useSelector(state => state.newClient)
 
   useEffect(() => {
     autocomplete = new window.google.maps.places.Autocomplete(
@@ -72,32 +79,14 @@ function GoogleAuto2({ address, setAddress }) {
       }
     }
   
-    const newClient = {
-      ...address,
-      client_address: {
-        ...parsedAddress,
-    
-      },
-    };
 
-    
-    setAddress((prev) => ({
-      ...prev,
-      client_address: {
-        ...parsedAddress,
-      
-      },
-    }));
+    dispatch(setGoogleAddress({...parsedAddress}))
   };
 
   const handelAddressChange = (e) => {
-    setAddress((prev) => ({
-      ...prev,
-      client_address: {
-        ...prev.client_address,
-        street: e.target.value,
-      },
-    }));
+
+    dispatch(handleClientInput3("street", e.target.value))
+
   };
 
   const onFocus = (event) => {

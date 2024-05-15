@@ -1,7 +1,20 @@
-
-    {
-        "functions": {
-          "source": "functions"
-        }
+{
+  "functions": {
+    "source": "functions"
+  },
+  "hosting": {
+    "public": ".next", 
+    "headers": [
+      {
+        "source": "/files/**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
       }
+    ]
+  }
+}
 

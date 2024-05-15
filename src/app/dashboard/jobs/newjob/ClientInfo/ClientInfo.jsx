@@ -5,60 +5,55 @@ import ClientInfoDropDown from "./ClientInfoDropDown";
 import NewClientModal from "./NewClientModal/NewClientModal";
 import ExistingClientAutoComplete from "./ExistingClientAutoComplete";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { handleClients, removeSelectedClientInfo, resetNewClientInformation, setClientRef, setSelectedClient, setSelectedClientInfo } from "../../../../Redux/actions";
 
 function ClientInfo({
-  clientInformation,
-  setClientInformation,
   handleAddNewClient,
-  selectedClient,
-  selectedClientInfo,
   handleClientSuggestions,
   handleSelectedClient,
-  setSelectedClient,
-  setSelectedClientInfo,
+  
+
 }) {
   const [openNewClientModal, setOpenNewClientModal] = useState(false);
   const [matchingArray, setMatchingArray] = useState([]);
+
+  const dispatch = useDispatch();
+  const { newJobInformation } = useSelector((state) => state.newJob);
+  const newClientInfo = useSelector((state) => state.newClient);
+
   const handleClientRef = (e) => {
     const ref = e.target.value;
-
-    const updatedClientinfo = {
-      ...clientInformation,
-      clientRef: ref,
-    };
-    setClientInformation(updatedClientinfo);
+    dispatch(setClientRef(ref));
   };
-  const handleClient = async (e) => {
-    const ref = e.target.value;
-
-    const updatedClientinfo = {
-      ...clientInformation,
-      clientDisplayName: ref,
-    };
+  const handleClientInput = async (e) => {
+    const inputValue = e.target.value;
 
     // here is where I need to search the Data base for existing clients
     try {
-
-      const matchingArrayData = await handleClientSuggestions(ref);
+      const matchingArrayData = await handleClientSuggestions(inputValue);
       setMatchingArray(matchingArrayData);
     } catch (error) {}
-    setClientInformation(updatedClientinfo);
+
+    
+    dispatch(handleClients(inputValue));
   };
 
   const handleopenNewClientModal = () => {
     setOpenNewClientModal(true);
-    setMatchingArray([])
+    setMatchingArray([]);
   };
 
   const handleRemoveClient = (e) => {
     e.preventDefault();
-
-    setSelectedClient(false);
-    setSelectedClientInfo(null);
+    dispatch(removeSelectedClientInfo());
+    dispatch(resetNewClientInformation())
+    dispatch(setSelectedClient(false))
+    
     const syntheticEvent = { target: { value: "" } };
-    handleClient(syntheticEvent);
-    setMatchingArray([])
-
+    handleClientInput(syntheticEvent);
+    setMatchingArray([]);
   };
   return (
     <>
@@ -78,7 +73,7 @@ function ClientInfo({
             <div className="w-full md:w-1/3 mt-5">
               <BasicInput
                 label="Client Refrence"
-                value={clientInformation.clientRef}
+                value={newJobInformation.clientRef}
                 placeholder="Client Ref"
                 type="text"
                 onChange={handleClientRef}
@@ -86,18 +81,18 @@ function ClientInfo({
             </div>
           </div>
           <div className="w-full md:w-2/3 ">
-            {selectedClientInfo ? (
+            {newJobInformation.selectedClientInfo ? (
               <div className="w-2/3 mt-8 bg-slate-300 p-4 rounded-lg flex">
                 <div className="left">
                   <div className="flex text-2xl">
                     <div className="w-[10rem]">Company:</div>
-                    <div className="font-bold"> {selectedClientInfo.name}</div>
+                    <div className="font-bold"> {newJobInformation.selectedClientInfo.name}</div>
                   </div>
                   <div className="flex text-xl mt-4 items-center">
                     <div className="w-[10rem]">Contact:</div>
                     <div className="font-bold flex">
                       <ClientInfoDropDown
-                        contacts={selectedClientInfo.contacts}
+                        contacts={newJobInformation.selectedClientInfo.contacts}
                       />
                       <button></button>
                     </div>
@@ -135,21 +130,30 @@ function ClientInfo({
                 <div className="w-full md:w-1/3 mt-5 relative">
                   <BasicInput
                     label="Client Contact Info"
-                    value={clientInformation.clientDisplayName}
+                    value={
+                      newJobInformation.clientInformation.clientDisplayName
+                    }
                     placeholder="Start Typing To Find Existing Client"
                     type="text"
-                    onChange={handleClient}
+                    onChange={(e) => handleClientInput(e)}
                   />
 
-                  {!openNewClientModal && clientInformation.clientDisplayName.length > 2 &&
+                  {!openNewClientModal &&
+                    newJobInformation.clientInformation.clientDisplayName
+                      .length > 2 &&
                     matchingArray && (
                       <ExistingClientAutoComplete
                         data={matchingArray}
                         handleSelectedClient={handleSelectedClient}
                       />
                     )}
-                  {!openNewClientModal && clientInformation.clientDisplayName.length > 2 &&
-                    matchingArray.length == 0 && (
+                  {!openNewClientModal &&
+                  newJobInformation.clientInformation && // Check if newJobInformation.clientInformation is defined
+                  newJobInformation.clientInformation.clientDisplayName && // Check if clientDisplayName is defined
+                  newJobInformation.clientInformation.clientDisplayName.length >
+                    2 && // Access clientDisplayName length
+                  matchingArray &&
+                  matchingArray.length === 0 && ( // Add a null check for matchingArray
                       <ExistingClientAutoComplete
                         data={[
                           {
@@ -192,8 +196,7 @@ function ClientInfo({
           open={openNewClientModal}
           setOpen={setOpenNewClientModal}
           handleAddNewClient={handleAddNewClient}
-          clientInformation={clientInformation}
-          setClientInformation={setClientInformation}
+          
         />
       )}
     </>

@@ -85,3 +85,13 @@ input[type='text']:focus { box-shadow: none; }
   border-style: solid !important;
 
 }
+
+
+.upload-progress {
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s ease; /* Smooth transition */
+}
+
+.upload-progress.show {
+  opacity: 1; /* Show when 'show' class is added */
+}
