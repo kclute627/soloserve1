@@ -12,6 +12,7 @@ import {
   SET_SELECTED_CLIENT_INFO,
   REMOVE_SELECTED_CLIENT_INFO
 } from "../actionTypes";
+import {SET_DUE_DATE, SET_PRIORITY} from "../Actions/jobActions"
 
 const initialState = {
   loading: false,
@@ -71,6 +72,8 @@ const initialState = {
     },
     serverTypeSelect: "employee",
     selectedEmployeeServer: "",
+    jobPriority: "routine",
+    jobDueDate: ""
   },
 };
 
@@ -168,6 +171,27 @@ const newJobReducer = (state = initialState, action) => {
             selectedClientInfo: null
           }
         }
+        case SET_DUE_DATE: 
+        return  {
+          ...state,
+          newJobInformation: {
+            ...state.newJobInformation,
+            jobDueDate: action.payload
+
+          }
+          
+        }
+        case SET_PRIORITY:
+          console.log('Reducer received SET_PRIORITY action:', action.payload);
+          return {
+            ...state,
+            newJobInformation: {
+              ...state.newJobInformation,
+              jobPriority: action.payload
+
+            }
+            
+          }
     default:
       return state;
   }

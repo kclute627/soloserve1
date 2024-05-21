@@ -16,6 +16,8 @@ import {
   setSelectedClientInfo,
 } from "../../../Redux/actions";
 import ClientInfo from "../newjob/ClientInfo/ClientInfo";
+import Calendar from "./Calendar/Calendar";
+import JobPriority from "./Calendar/JobPriority"
 import ProcessServer from "./ProcessServer/ProcessServer";
 import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput";
 import CourtInformation from "./Case/CaseInformation";
@@ -129,7 +131,7 @@ function Newjob() {
       await getClientFromDB(newClient).then((dispatch) => {
         dispatch(setSelectedClientInfo(dispatch));
       });
-      console.log(data);
+  
       newDataStructure = {
         id: data.id,
         clientDisplayName: data.name,
@@ -177,7 +179,14 @@ function Newjob() {
             handleSelectedClient={handleSelectedClient}
           />
         </div>
-        <div className="">Due Date Slider</div>
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <div className="">
+            <JobPriority />
+          </div>
+          <div className="">
+            <Calendar />
+          </div>
+        </div>
 
         <ProcessServer
           contractInformation={contractInformation}
