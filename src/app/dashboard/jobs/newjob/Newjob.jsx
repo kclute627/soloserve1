@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   createNewClientinDb,
-  auth,
-  getUserFromDb,
   getClientFromDB,
   getMatchingClientsFromDb,
 } from "../../../firebase/firebase";
@@ -17,11 +15,12 @@ import {
 } from "../../../Redux/actions";
 import ClientInfo from "../newjob/ClientInfo/ClientInfo";
 import Calendar from "./Calendar/Calendar";
-import JobPriority from "./Calendar/JobPriority"
+import JobPriority from "./Calendar/JobPriority";
 import ProcessServer from "./ProcessServer/ProcessServer";
 import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput";
 import CourtInformation from "./Case/CaseInformation";
-import Devider from "../../../components/Devider";
+import ServiceInfo from "./ServiceInfo/ServiceInfo"
+import JobNotes from "./Calendar/JobNotes"
 
 function Newjob() {
   /// new client
@@ -57,10 +56,11 @@ function Newjob() {
   const { user } = useSelector((state) => state.user);
 
   const handleClientSuggestions = async (text) => {
+
     if (text.length > 2) {
       try {
         const matchingArray = await getMatchingClientsFromDb(text, user);
-
+        // console.log(matchingArray)
         return matchingArray;
       } catch (error) {
         console.log(error);
@@ -113,6 +113,20 @@ function Newjob() {
     dispatch(fetchClientInfo(newClient));
   };
 
+  const handleAddNewContractor = async (event) => {
+    const newClient = {
+      user: user,
+      clientDisplayName: newClientInfo.clientDisplayName,
+      client_address: newClientInfo.client_address,
+      phoneNumber: newClientInfo.contact.phoneNumber,
+      email: newClientInfo.contact.email,
+      firstName: newClientInfo.contact.firstName,
+      lastName: newClientInfo.contact.lastName,
+      website: newClientInfo.website,
+    };
+    dispatch(fetchClientInfo(newClient));
+  };
+
   const handleAddNewClient = async () => {
     let data = null;
     let newDataStructure = null;
@@ -131,7 +145,7 @@ function Newjob() {
       await getClientFromDB(newClient).then((dispatch) => {
         dispatch(setSelectedClientInfo(dispatch));
       });
-  
+
       newDataStructure = {
         id: data.id,
         clientDisplayName: data.name,
@@ -180,24 +194,43 @@ function Newjob() {
           />
         </div>
         <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
-          <div className="">
-            <JobPriority />
+          <div className="flex w-full items-center justify-ar\
+          ">
+            <div className="left ">
+              <div className="">
+                <JobPriority />
+              </div>
+              <div className="">
+                <Calendar />
+              </div>
+            </div>
+           
           </div>
-          <div className="">
-            <Calendar />
+        </div>
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+        <div className="right w-full">
+              <JobNotes />
           </div>
+        </div>
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <ProcessServer
+          
+   
+            handleClientSuggestions={handleClientSuggestions}
+            handleAddNewClient={handleAddNewClient2}
+
+          />
         </div>
 
-        <ProcessServer
-          contractInformation={contractInformation}
-          setContractInformation={setContractInformation}
-          setServerTypeSelect={setServerTypeSelect}
-          serverTypeSelect={serverTypeSelect}
-        />
-        <div className="pt-10">
-          <Devider />
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <ServiceInfo />
         </div>
-        <CourtInformation />
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <CourtInformation />
+        </div>
+        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
+          <CourtInformation />
+        </div>
       </form>
     </div>
   );

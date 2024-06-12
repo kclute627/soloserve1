@@ -10,9 +10,18 @@ import {
   CLIENT_SEARCH_BAR,
   SET_SELECTED_CLIENT,
   SET_SELECTED_CLIENT_INFO,
-  REMOVE_SELECTED_CLIENT_INFO
+  REMOVE_SELECTED_CLIENT_INFO,
+  CONTRACTOR_SEARCH_BAR,
+  SET_SELECTED_CONTRACTOR,
+  SET_SELECTED_CONTRACTOR_INFO,
+  REMOVE_SELECTED_CONTRACTOR_INFO,
+  ADD_SERVICE_ADDRESS,
+  DELETE_SERVICE_ADDRESS,
+  UPDATE_SERVICE_ADDRESS,
+  SET_RECIPIENT,
+  SET_COURT_INFO
 } from "../actionTypes";
-import {SET_DUE_DATE, SET_PRIORITY} from "../Actions/jobActions"
+import {SET_DUE_DATE, SET_PRIORITY, SET_SERVER_TYPE} from "../Actions/jobActions"
 
 const initialState = {
   loading: false,
@@ -26,12 +35,15 @@ const initialState = {
     selectedFiles: [],
     selectedClient: false,
     selectedClientInfo: null,
+    selectedContractor: false,
+    selectedContractorInfo: null,
     clientRef: "",
     clientInformation: {
      
       id: "",
       clientDisplayName: "",
       client_address: {
+
         street: "",
         suite: "",
         city: "",
@@ -70,10 +82,33 @@ const initialState = {
         phoneNumber: "",
       },
     },
-    serverTypeSelect: "employee",
-    selectedEmployeeServer: "",
     jobPriority: "routine",
-    jobDueDate: ""
+    jobDueDate: "",
+    serverType: "employee",
+    recipient: "",
+    serviceAddress: [
+      {
+        street: "",
+        suite: "",
+        city: "",
+        state: "",
+        zip: "",
+        lat: "",
+        lng: "",
+        googleMapLink: "",
+        primary: true
+      }
+     
+    ],
+    caseInformation: {
+      caseId: "",
+      caseNumber: "",
+      plaintiff: "",
+      defendant: "",
+      courtName: "",
+
+      
+    }
   },
 };
 
@@ -146,12 +181,32 @@ const newJobReducer = (state = initialState, action) => {
             }
           }
         }
+        case CONTRACTOR_SEARCH_BAR: 
+        return {
+          ...state,
+          newJobInformation: {
+            ...state.newJobInformation,
+            contractInformation: {
+              ...state.contractInformation,
+              contractorDisplayName: action.payload
+
+            }
+          }
+        }
         case SET_SELECTED_CLIENT:
         return {
           ...state,
           newJobInformation: {
             ...state.newJobInformation,
             selectedClient: action.payload
+          }
+        }
+        case SET_SELECTED_CONTRACTOR: 
+        return {
+          ...state,
+          newJobInformation: {
+            ...state.newJobInformation,
+            selectedContractor: action.payload
           }
         }
         case SET_SELECTED_CLIENT_INFO:
@@ -163,6 +218,14 @@ const newJobReducer = (state = initialState, action) => {
               selectedClientInfo: {...action.payload}
             }
           }
+        case SET_SELECTED_CONTRACTOR_INFO: 
+        return {
+          ...state,
+          newJobInformation: {
+            ...state.newJobInformation,
+            selectedContractorInfo: {...action.payload}
+          }
+        }
        case REMOVE_SELECTED_CLIENT_INFO:
         return {
           ...state,
@@ -182,7 +245,7 @@ const newJobReducer = (state = initialState, action) => {
           
         }
         case SET_PRIORITY:
-          console.log('Reducer received SET_PRIORITY action:', action.payload);
+          
           return {
             ...state,
             newJobInformation: {
@@ -192,6 +255,95 @@ const newJobReducer = (state = initialState, action) => {
             }
             
           }
+        case SET_SERVER_TYPE:
+          return {
+            ...state,
+            newJobInformation: {
+             ...state.newJobInformation,
+             serverType: action.payload
+            }
+            
+          }
+        case SET_RECIPIENT: 
+          return {
+            ...state,
+            newJobInformation: {
+              ...state.newJobInformation,
+              recipient: action.payload
+            }
+          }
+          case ADD_SERVICE_ADDRESS:
+            return {
+              ...state,
+              newJobInformation: {
+                ...state.newJobInformation,
+                serviceAddress: [
+                  ...state.newJobInformation.serviceAddress,
+                  {
+                    id: "",
+                    street: "",
+                    suite: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    lat: "",
+                    lng: "",
+                    googleMapLink: "",
+                    primary: false,
+                  },
+                ],
+              },
+            };
+          case UPDATE_SERVICE_ADDRESS:
+            return {
+              ...state,
+              newJobInformation: {
+                ...state.newJobInformation,
+                serviceAddress: state.newJobInformation.serviceAddress.map(
+                  (address, index) =>
+                    index === action.payload.index
+                      ? { ...address, ...action.payload.address }
+                      : address
+                ),
+              },
+            };
+          case DELETE_SERVICE_ADDRESS:
+            return {
+              ...state,
+              newJobInformation: {
+                ...state.newJobInformation,
+                serviceAddress: state.newJobInformation.serviceAddress.filter(
+                  (address, index) => index !== action.payload
+                ),
+              },
+            };
+            case SET_RECIPIENT:
+              return {
+                ...state,
+                newJobInformation: {
+                  ...state.newJobInformation,
+                  recipient: action.payload
+                },
+              };
+            case SET_COURT_INFO:
+                return {
+                ...state,
+                newJobInformation: {
+                  ...state.newJobInformation,
+                  caseInformation: {
+                    ...state.newJobInformation.caseInformation,
+                    [action.payload.name]: action.payload.value,
+
+                  }
+                  
+                },
+      };
+          
+          
+
+
+
+      
     default:
       return state;
   }

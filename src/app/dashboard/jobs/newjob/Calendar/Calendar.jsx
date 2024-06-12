@@ -45,7 +45,7 @@ export default function Calendar() {
         handleDateSelect(date);
         break;
       case "sameday":
-        date.setDate(date.getDate() - 1);
+        date.setDate(date.getDate());
         handleDateSelect(date);
         break;
       default:
@@ -136,7 +136,7 @@ export default function Calendar() {
 
       // This will trigger the useMemo hook to update days
       dispatch(setJobDueDate(date));
-      //  setSelectedDate(date);
+
     }
   };
 
@@ -193,6 +193,7 @@ export default function Calendar() {
               onClick={() => handleDateSelect(day.date)}
               className={classNames(
                 "py-1.5 hover:bg-gray-100 focus:z-10",
+                day.isToday && "bg-indigo-900",
                 day.isCurrentMonth ? "bg-white" : "bg-gray-50",
                 (day.isSelected || day.isToday) && "font-semibold  ",
                 day.isSelected && "text-white",
@@ -209,7 +210,7 @@ export default function Calendar() {
                 dayIdx === 6 && "rounded-tr-lg",
                 dayIdx === days.length - 7 && "rounded-bl-lg",
                 dayIdx === days.length - 1 && "rounded-br-lg",
-                day.isToday && "bg-indigo-500"
+                
               )}
             >
               <time
@@ -224,12 +225,7 @@ export default function Calendar() {
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          className="mt-8 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-        >
-          Add event
-        </button>
+        
       </div>
     </div>
   );

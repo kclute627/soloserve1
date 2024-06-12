@@ -1,5 +1,5 @@
 "use client"
-import { GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS } from "../actionTypes"; 
+import { CLEAR_USER, GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS } from "../actionTypes"; 
 
 
 
@@ -17,6 +17,8 @@ const userReducer = (state = initialState, action) => {
             return {...state, loading: false, user: action.payload, error: null}
         case GET_USER_FAILURE: 
             return {...state, loading: false, error: action.payload}
+        case CLEAR_USER: 
+            return {...state}
         default:
             return state
     }

@@ -13,6 +13,9 @@ export default function NewClientModal({
   open,
   setOpen,
   handleAddNewClient,
+  title, 
+  button, 
+  client = true
   
 }) {
   const [loading, setLoading] = useState(false);
@@ -67,7 +70,7 @@ export default function NewClientModal({
                 <div>
                   <form className="space-y-2" action="#" method="POST">
                     <div className="text-xl text-gray-600 font-bold mb-1">
-                      Client Information
+                      {title}
                     </div>
                     <div className="">
                       <InputForm
@@ -230,7 +233,7 @@ export default function NewClientModal({
                         {loading ? (
                           <RotateLoader color="#fff" height={2} />
                         ) : (
-                          "Add Client"
+                          button
                         )}
                       </button>
                     </div>

@@ -4,33 +4,49 @@ import { Fragment, useRef, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { RotateLoader } from "react-spinners";
 import InputForm from "../../../../signup/Input";
-import {
-  createNewClientinDb,
-  auth,
-  getUserFromDb,
-} from "../../../../firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import GoogleAutoContractor from "./GoogleAutoContractor";
-
+import GoogleAuto3 from "./GoogleAuto3";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { handleContractorInput, handleContractorInput2, handleContractorInput3, fetchContractorInfo } from "../../../../Redux/actions";
 
 export default function NewContractorModal({
   open,
   setOpen,
   handleAddNewClient,
-  clientInformation,
-  setClientInformation,
+  title, 
+  buttonText, 
+  client = true
+  
 }) {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
 
+  const dispatch = useDispatch();
+  const { newJobInformation: {contractInformation} } = useSelector((state) => state.newJob);
+  const newContractor = useSelector(state => state.newContractor)
+  const { user } = useSelector((state) => state.user);
+
+  const handleAddNewContractor2 = async (event) => {
+    const newContractor2 = {
+      user: user,
+      clientDisplayName: newContractor.clientDisplayName,
+      client_address: newContractor.client_address,
+      phoneNumber: newContractor.contact.phoneNumber,
+      email: newContractor.contact.email,
+      firstName: newContractor.contact.firstName,
+      lastName: newContractor.contact.lastName,
+      website: newContractor.website,
+    };
+    dispatch(fetchContractorInfo(newContractor2));
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     setLoading(true);
     try {
-      const newClient = await handleAddNewClient();
+      
 
-   
+      const newContractor = await handleAddNewContractor2()
       
     } catch (error) {
       console.log(error)
@@ -40,48 +56,6 @@ export default function NewContractorModal({
     setLoading(false);
   };
 
-  useEffect(() => {
-    onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        try {
-          const userInfo = await getUserFromDb(authUser);
-
-          setUser(userInfo);
-        } catch (error) {
-          console.log(error, "error line98");
-        }
-      }
-    });
-  }, []);
-
-  const handleInputdata = (e) => {
-
-      setClientInformation((info) => ({
-        ...info,
-        [e.target.name]: e.target.value,
-      }));
-
-    
-    
-    
-  };
-
-  const handleInputdata2 = (e) => {
-    
-    setClientInformation((info) => ({
-      ...info,
-      contact: 
-      { ...info.contact, 
-        [e.target.name]: e.target.value 
-      },
-    }));
-  };
-  const handleInputdata3 = (e) => {
-    setClientInformation((info) => ({
-      ...info,
-      client_address: { ...info.contractor_address, [e.target.name]: e.target.value },
-    }));
-  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -113,14 +87,13 @@ export default function NewContractorModal({
                 <div>
                   <form className="space-y-2" action="#" method="POST">
                     <div className="text-xl text-gray-600 font-bold mb-1">
-                      Contractor Information
+                      {title}
                     </div>
                     <div className="">
                       <InputForm
-                        value={clientInformation.clientDisplayName}
-                        
+                        value={newContractor.clientDisplayName}
                         placeHolder={"Company"}
-                        onChange={handleInputdata}
+                        onChange={(e)=>dispatch(handleContractorInput(e.target.name, e.target.value))}
                         label="Company Name"
                         id="clientDisplayName"
                         type="text"
@@ -131,9 +104,9 @@ export default function NewContractorModal({
                     <div className="flex space-x-4">
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.firstName}
+                          value={newContractor.contact.firstName}
                           name="firstName"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch(handleContractorInput2(e.target.name, e.target.value))}
                           label="First Name"
                           id="firstName"
                           type="text"
@@ -144,8 +117,8 @@ export default function NewContractorModal({
                       </div>
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.lastName}
-                          onChange={handleInputdata2}
+                          value={newContractor.contact.lastName}
+                          onChange={(e)=>dispatch(handleContractorInput2(e.target.name, e.target.value))}
                           label="Last Name"
                           id="lastName"
                           type="text"
@@ -158,9 +131,9 @@ export default function NewContractorModal({
                     <div className="flex space-x-4">
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.contact.email}
+                          value={newContractor.contact.email}
                           name="email"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch( handleContractorInput2(e.target.name, e.target.value))}
                           label="Email Address"
                           id="email"
                           type="email"
@@ -171,9 +144,9 @@ export default function NewContractorModal({
                       </div>
                       <div className="w-1/2">
                         <InputForm
-                          value={clientInformation.phoneNumber}
+                          value={newContractor.phoneNumber}
                           name="phoneNumber"
-                          onChange={handleInputdata2}
+                          onChange={(e)=>dispatch(handleContractorInput2(e.target.name, e.target.value))}
                           label="Phone Number"
                           id="phoneNumber"
                           type="tel"
@@ -188,12 +161,12 @@ export default function NewContractorModal({
                       Company Information
                     </div>
                     <div className="flex space-x-4">
-                      <GoogleAutoContractor address={clientInformation} setAddress={setClientInformation}  />
+                      <GoogleAuto3 address={newContractor}  />
                       <div className="w-1/3">
                         <InputForm
-                          value={clientInformation.contractor_address.suite}
+                          value={newContractor.client_address.suite}
                           name="suite"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleContractorInput3(e.target.name, e.target.value))}
                           label="Suite"
                           placeHolder={"Suite"}
                           id="suite"
@@ -210,9 +183,9 @@ export default function NewContractorModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.contractor_address.city}
+                          value={newContractor.client_address.city}
                           name="city"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleContractorInput3(e.target.name, e.target.value))}
                           label="City"
                           placeHolder={"City"}
                           id="city"
@@ -224,9 +197,9 @@ export default function NewContractorModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.contractor_address.state}
+                          value={newContractor.client_address.state}
                           name="state"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleContractorInput3(e.target.name, e.target.value))}
                           label="State"
                           placeHolder={"State"}
                           id="state"
@@ -238,9 +211,9 @@ export default function NewContractorModal({
                       <div className="w-1/3">
                         <InputForm
                          
-                          value={clientInformation.contractor_address.zip}
+                          value={newContractor.client_address.zip}
                           name="zip"
-                          onChange={handleInputdata3}
+                          onChange={(e)=>dispatch(handleContractorInput3(e.target.name, e.target.value))}
                           label="Zip"
                           placeHolder={"Zip"}
                           id="zip"
@@ -253,10 +226,10 @@ export default function NewContractorModal({
                     <div className="flex space-x-7 mt-4">
                       <div className="w-1/3">
                         <InputForm
-                          value={clientInformation.website}
+                          value={newContractor.website}
                         
                           name="website"
-                          onChange={handleInputdata}
+                          onChange={(e)=>dispatch(handleContractorInput(e.target.name, e.target.value))}
                           label="Website"
                           placeHolder={"Website"}
                           id="website"
@@ -271,13 +244,13 @@ export default function NewContractorModal({
                     <div className="">
                       <button
                         type="submit"
-                        // onClick={handleSubmit}
+                        onClick={handleSubmit}
                         className="cursor-pointer flex mt-6 w-full justify-center rounded-md bg-primaryGreen px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primaryGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       >
                         {loading ? (
                           <RotateLoader color="#fff" height={2} />
                         ) : (
-                          "Add Client"
+                          buttonText
                         )}
                       </button>
                     </div>

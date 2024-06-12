@@ -20,6 +20,7 @@ import {
   getUserRequest,
   getUserFailure,
   getUserSuccess,
+  logUserOut,
 } from "../Redux/actions";
 import {
   ChevronDownIcon,
@@ -42,7 +43,7 @@ const teams = [
 ];
 const userNavigation = [
   { name: "Your profile", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Sign Out", href: "#" },
 ];
 
 function layout({ children }) {
@@ -96,6 +97,16 @@ function layout({ children }) {
 
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector((state) => state.user);
+
+
+  const handleSignOut = () => {
+    auth.signOut().then(() => {
+      dispatch(logUserOut())
+      console.log('User signed out');
+    }).catch((error) => {
+      console.error('Error signing out: ', error);
+    });
+  };
 
   const sidebarClick = (e, itemname) => {
     e.preventDefault();
@@ -330,6 +341,7 @@ function layout({ children }) {
                           {({ active }) => (
                             <a
                               href={item.href}
+                              onClick={item.name == "Sign Out" ? ()=>handleSignOut() : null}
                               className={classNames(
                                 active ? "bg-gray-50" : "",
                                 "block px-3 py-1 text-sm leading-6 text-gray-900"

@@ -37,7 +37,7 @@ export default function Home() {
         const uid = user.uid;
         try {
           const userData = await getUserFromDb(user);
-          console.log(uid)
+  
           dispatch(getUserSuccess(userData));
           router.push("/signup");
         } catch (error) {

@@ -1,109 +1,113 @@
 "use client";
 import { PlusSmallIcon } from "@heroicons/react/20/solid";
 import BasicInput from "../../../jobs/BasicInput";
-import ClientInfoDropDown from "./ClientInfoDropDown";
-import NewClientModal from "./NewClientModal/NewClientModal";
-import ExistingClientAutoComplete from "./ExistingClientAutoComplete";
+import ClientInfoDropDown from "../ClientInfo/ClientInfoDropDown";
+import ContractorInfoDropDown from "./ContractorInfoDropDown";
+import NewClientModal from "../ClientInfo/NewClientModal/NewClientModal";
+import NewContractorModal from "./NewContractorModal";
+
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-import { handleClients, removeSelectedClientInfo, resetNewClientInformation, setClientRef, setSelectedClient, setSelectedClientInfo } from "../../../../Redux/actions";
-
-function ClientInfo({
-  handleAddNewClient,
-  handleClientSuggestions,
-  handleSelectedClient,
+import {
+  handleContractorInput,
+  handleContractors,
+  handleContractorInput2,
+  handleContractorInput3,
+  removeSelectedContractorInfo,
+  resetNewContractorInformation,
+  setSelectedContractor,
+  setSelectedContractorInfo,
   
+} from "../../../../Redux/actions";
+import ExistingContractorAutoComplete from "./ExistingContractorAutoComplete"
 
-}) {
+function Contractor2({handleClientSuggestions, handleAddNewClient}) {
   const [openNewClientModal, setOpenNewClientModal] = useState(false);
   const [matchingArray, setMatchingArray] = useState([]);
 
   const dispatch = useDispatch();
   const { newJobInformation } = useSelector((state) => state.newJob);
-  const newClientInfo = useSelector((state) => state.newClient);
+ 
 
-  const handleClientRef = (e) => {
-    const ref = e.target.value;
-    dispatch(setClientRef(ref));
+
+
+  const handleSelectedClient = async (client) => {
+    try {
+      dispatch(setSelectedContractorInfo(client));
+      dispatch(setSelectedContractor(true));
+    } catch (error) {}
   };
-  const handleClientInput = async (e) => {
-    const inputValue = e.target.value;
 
+  const handleContractorInput = async (e) => {
+    const inputValue = e.target.value;
+ 
     // here is where I need to search the Data base for existing clients
     try {
       const matchingArrayData = await handleClientSuggestions(inputValue);
+     
       setMatchingArray(matchingArrayData);
     } catch (error) {}
 
-    
-    dispatch(handleClients(inputValue));
+    dispatch(handleContractors(inputValue));
   };
+
+  const handleOpenNewContractorModal = () => {};
 
   const handleopenNewClientModal = () => {
     setOpenNewClientModal(true);
     setMatchingArray([]);
   };
 
-  const handleRemoveClient = (e) => {
+  const handleRemoveContractor = (e) => {
     e.preventDefault();
-    dispatch(removeSelectedClientInfo());
-    dispatch(resetNewClientInformation())
-    dispatch(setSelectedClient(false))
-    
+    dispatch(removeSelectedContractorInfo())
+    dispatch(resetNewContractorInformation())
+    dispatch(setSelectedContractor(false))
+
+
     const syntheticEvent = { target: { value: "" } };
-    handleClientInput(syntheticEvent);
+    handleContractorInput(syntheticEvent);
     setMatchingArray([]);
   };
+
+ 
+
   return (
     <>
       <div>
         <div className="mt-4 ">
-          <div className="flex w-full">
-            <div className="w-full md:w-2/3 ">
-              <label
-                htmlFor="cover-photo"
-                className="block text-lg md:text-2xl font-bold leading-6 text-gray-900"
-              >
-                Client Information
-              </label>
-            </div>
-          </div>
-          <div className="w-full md:w-2/3">
-            <div className="w-full md:w-1/3 mt-5">
-              <BasicInput
-                label="Client Refrence"
-                value={newJobInformation.clientRef}
-                placeholder="Client Ref"
-                type="text"
-                onChange={handleClientRef}
-              />
-            </div>
-          </div>
           <div className="w-full md:w-2/3 ">
-            {newJobInformation.selectedClientInfo ? (
+            {newJobInformation.selectedContractorInfo && newJobInformation.selectedContractor ? (
               <div className="w-2/3 mt-8 bg-slate-300 p-4 rounded-lg flex">
                 <div className="left">
                   <div className="flex text-2xl">
                     <div className="w-[10rem]">Company:</div>
-                    <div className="font-bold"> {newJobInformation.selectedClientInfo.name}</div>
+                    <div className="font-bold">
+                      {" "}
+                      {newJobInformation.selectedContractorInfo.name}
+                    </div>
                   </div>
                   <div className="flex text-xl mt-4 items-center">
                     <div className="w-[10rem]">Contact:</div>
+                    {newJobInformation.selectedContractorInfo ? (
+
+                  
                     <div className="font-bold flex">
-                      <ClientInfoDropDown
-                        contacts={newJobInformation.selectedClientInfo.contacts}
+                      <ContractorInfoDropDown
+                        contacts={newJobInformation.selectedContractorInfo.contacts}
                       />
                       <button></button>
                     </div>
+                      ) : (<></>)}
                   </div>
                   <div className="flex text-xl ml-0 mt-4">
                     <div className=" flex items-start space-x-6  ">
                       <button
-                        onClick={handleRemoveClient}
+                        onClick={handleRemoveContractor}
                         className="underline text-gray-700"
                       >
-                        Remove Client
+                        Remove Contractor
                       </button>
                       <button className="underline text-gray-700">
                         Add Contact
@@ -113,55 +117,62 @@ function ClientInfo({
                 </div>
                 <div className="right  w-1/3 ml-20">
                   <div className="">
-                    <div className="m-auto">Past Due Invoices</div>
-                    <div className="">3 - Past Due </div>
+                    <div className="m-auto">Past Serves</div>
+                    <div className="">38 - Completed Jobs </div>
                   </div>
                   <div className="mt-10">
-                    <div className="m-auto">Total Jobs</div>
+                    <div className="m-auto">Rating</div>
                     <div className="flex space-x-9">
-                      <div className="">3 - Open </div>
-                      <div className=""> 75 - Closed </div>
+                      <div className="">⭐️⭐️⭐️⭐️⭐️</div>
+                   
+                    </div>
+                  </div>
+                  <div className="mt-10">
+                    <div className="m-auto">Private Note</div>
+                    <div className="flex space-x-9">
+                      <div className="">Great Work send all Indiana Jobs</div>
+                   
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="w-full mt-5 md:flex  items-center space-x-8">
-                <div className="w-full md:w-1/3 mt-5 relative">
+                <div className="w-full md:w-1/2 mt-5 relative">
                   <BasicInput
-                    label="Client Contact Info"
+                    label="Contractor Information"
                     value={
-                      newJobInformation.clientInformation.clientDisplayName
+                      newJobInformation.contractInformation.contractorDisplayName
                     }
-                    placeholder="Start Typing To Find Existing Client"
+                    placeholder="Start Typing To Find Existing Contractor"
                     type="text"
-                    onChange={(e) => handleClientInput(e)}
+                    onChange={(e) => handleContractorInput(e)}
                   />
 
                   {!openNewClientModal &&
-                    newJobInformation.clientInformation.clientDisplayName
+                    newJobInformation.contractInformation.contractorDisplayName
                       .length > 2 &&
                     matchingArray && (
-                      <ExistingClientAutoComplete
+                      <ExistingContractorAutoComplete
                         data={matchingArray}
                         handleSelectedClient={handleSelectedClient}
                       />
                     )}
                   {!openNewClientModal &&
-                  newJobInformation.clientInformation && // Check if newJobInformation.clientInformation is defined
-                  newJobInformation.clientInformation.clientDisplayName && // Check if clientDisplayName is defined
-                  newJobInformation.clientInformation.clientDisplayName.length >
+                  newJobInformation.contractInformation && // Check if newJobInformation.clientInformation is defined
+                  newJobInformation.contractInformation.contractorDisplayName && // Check if clientDisplayName is defined
+                  newJobInformation.contractInformation.contractorDisplayName.length >
                     2 && // Access clientDisplayName length
                   matchingArray &&
                   matchingArray.length === 0 && ( // Add a null check for matchingArray
-                      <ExistingClientAutoComplete
+                      <ExistingContractorAutoComplete
                         data={[
                           {
                             id: 4,
                             contacts: [
                               {
                                 firstName: "Please Add New",
-                                lastname: "Client",
+                                lastname: "Contractor",
                               },
                             ],
                             addresses: [],
@@ -183,7 +194,7 @@ function ClientInfo({
                       className="-ml-0.5 h-5 w-5"
                       aria-hidden="true"
                     />
-                    Add Client
+                    Add New Contractor
                   </button>
                 </div>
               </div>
@@ -192,17 +203,18 @@ function ClientInfo({
         </div>
       </div>
       {openNewClientModal && (
-        <NewClientModal
+        <NewContractorModal
           open={openNewClientModal}
           setOpen={setOpenNewClientModal}
           handleAddNewClient={handleAddNewClient}
-          title="Client Information"
-          button={"Add Client"}
-          
+          title="Contractor Information"
+          buttonText={"Add Contractor"}
+          client = {false} 
+
         />
       )}
     </>
   );
 }
 
-export default ClientInfo;
+export default Contractor2;

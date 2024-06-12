@@ -94,10 +94,21 @@ const createUserInDb = async (
       },
     ],
     user_plan: "free",
+    employees: [
+      {
+      id: uuidv4(),
+      firstName: firstName,
+      lastName: lastname,
+      email: user.email,
+      permission: "owner"
+    }],
   };
 
   const docRef = await setDoc(doc(db, "users", user.uid), userData);
 };
+
+
+/// get user from database 
 
 const createNewClientinDb = async (user, companyName, userInfo, phone, email, firstName, lastname, website) => {
   const address = {
@@ -185,8 +196,8 @@ const getMatchingClientsFromDb = async(searchText, user) => {
     const clientsQuery = query(
       collection(db, 'clients'),
       where('generatedBy', '==', user.user_uid),
-      where('name', '>=', searchText),
-      where('name', '<=', searchText + '\uf8ff'),
+      where('searchName', '>=', searchText),
+      where('searchName', '<=', searchText + '\uf8ff'),
       limit(8) // '\uf8ff' is a placeholder for the last Unicode character
     ); // '\uf8ff' is a placeholder for the last Unicode character
 
