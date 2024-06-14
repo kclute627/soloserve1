@@ -1,4 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 function ProfileDropDown() {
   return (
@@ -37,7 +39,7 @@ function ProfileDropDown() {
             {userNavigation.map((item) => (
               <Menu.Item key={item.name}>
                 {({ active }) => (
-                  <a
+                  <Link
                     href={item.href}
                     className={classNames(
                       active ? "bg-gray-50" : "",
@@ -45,7 +47,7 @@ function ProfileDropDown() {
                     )}
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 )}
               </Menu.Item>
             ))}

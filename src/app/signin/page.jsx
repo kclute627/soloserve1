@@ -11,6 +11,7 @@ import Header from "../components/Header";
 import { signInEmail } from "../firebase/firebase";
 import ErrorPopUp from "../components/ErrorPopUp";
 import FlexAuto from "../layout/FlexAuto";
+import Link from "next/link";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -108,12 +109,12 @@ export default function SignIn() {
                       Password
                     </label>
                     <div className="text-sm">
-                      <a
+                      <Link
                         href="forgot-password"
                         className="font-semibold text-gray-950 hover:text-gray-700"
                       >
                         Forgot password?
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="mt-2">
@@ -148,12 +149,12 @@ export default function SignIn() {
 
               <p className="mt-10 text-center text-sm text-gray-500">
                 Not a member?{" "}
-                <a
+                <Link
                   href="/signup"
                   className="font-semibold leading-6 text-gray-950 hover:text-gray-600"
                 >
                   Start a 14 day free trial
-                </a>
+                </Link>
               </p>
             </div>
           </div>

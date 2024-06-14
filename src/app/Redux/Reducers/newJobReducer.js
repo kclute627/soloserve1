@@ -19,7 +19,8 @@ import {
   DELETE_SERVICE_ADDRESS,
   UPDATE_SERVICE_ADDRESS,
   SET_RECIPIENT,
-  SET_COURT_INFO
+  SET_COURT_INFO,
+  SET_JOB_NOTES
 } from "../actionTypes";
 import {SET_DUE_DATE, SET_PRIORITY, SET_SERVER_TYPE} from "../Actions/jobActions"
 
@@ -108,7 +109,8 @@ const initialState = {
       courtName: "",
 
       
-    }
+    },
+    jobNotes: ""
   },
 };
 
@@ -170,7 +172,7 @@ const newJobReducer = (state = initialState, action) => {
           
         }
       }
-      case CLIENT_SEARCH_BAR:
+        case CLIENT_SEARCH_BAR:
         return {
           ...state,
           newJobInformation: {
@@ -337,7 +339,17 @@ const newJobReducer = (state = initialState, action) => {
                   }
                   
                 },
-      };
+
+
+                     };
+          case SET_JOB_NOTES: 
+          return {
+            ...state,
+            newJobInformation: {
+              ...state.newJobInformation,
+              jobNotes: action.payload
+            }
+          }
           
           
 

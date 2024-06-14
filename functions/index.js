@@ -18,32 +18,33 @@ exports.moveFilesToLowCostStorage = functions.https.onRequest(async (request, re
         const destinationBucketName = 'authdemo-b5947'; // Destination bucket name
 
         const sourceBucket = storage.bucket(sourceBucketName);
-
-          // List all files in the "files" folder of the source bucket
+        const destinationBucket = storage.bucket(destinationBucketName);
+        
+        // List all files in the "files" folder of the source bucket
         const [files] = await sourceBucket.getFiles({ prefix: 'files/' });
 
 
         // Calculate file age
         const now = new Date();
+        const thirtyDaysAgo = new Date(now);
+        thirtyDaysAgo.setDate(now.getDate() - 30);
+
 
           // Iterate over each file
           for (const file of files) {
             // Get metadata to check creation time
             const [metadata] = await file.getMetadata();
-            const creationTime = metadata.timeCreated;
+            const creationTime = new Date(metadata.timeCreated);
 
-            // Calculate file age
-            const thirtyDaysAgo = new Date(now);
-            thirtyDaysAgo.setDate(now.getDate() - 30);
+       
 
             // Check if the file is older than 30 days
             if (creationTime < thirtyDaysAgo) {
                 // Move the file to the destination bucket
-                const destinationBucket = storage.bucket(destinationBucketName);
                 const destinationFile = destinationBucket.file(file.name);
                 await file.move(destinationFile);
 
-                console.log(`File ${file.name} moved to ${destinationBucketName}.`);
+              
             }
         }
 

@@ -65,4 +65,7 @@ export const SET_COURT_NAME = 'SET_COURT_NAME';
 export const SET_COURT_INFO = 'SET_COURT_INFO';
 
 
+export const SET_JOB_NOTES = 'SET_JOB_NOTES';
+
+
 

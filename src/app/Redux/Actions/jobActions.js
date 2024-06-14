@@ -6,3 +6,6 @@ export const SET_SERVER_TYPE = "SET_SERVER_TYPE"
 
 export const SET_RECIPIENT = "SET_RECIPIENT"
 
+export const SET_JOBS = "SET_JOBS"
+
+

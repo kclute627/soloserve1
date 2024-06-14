@@ -1,4 +1,4 @@
-import { SET_DUE_DATE, SET_PRIORITY, SET_RECIPIENT, SET_SERVER_TYPE } from "./jobActions";
+import { SET_JOBS, SET_DUE_DATE, SET_PRIORITY, SET_RECIPIENT, SET_SERVER_TYPE } from "./jobActions";
 
 
 
@@ -24,4 +24,10 @@ export const setRecipient = (input) => ({
     type: SET_RECIPIENT,
     payload: input
     
+})
+
+
+export const getAllJobs = (jobs) => ({
+    type: SET_JOBS,
+    payload: jobs
 })

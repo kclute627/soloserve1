@@ -38,7 +38,8 @@ import {
   SET_PLANT,
   SET_DEF,
   SET_COURT_NAME,
-  SET_COURT_INFO
+  SET_COURT_INFO,
+  SET_JOB_NOTES
 } from "./actionTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -249,6 +250,13 @@ console.log(name)
   },
 }
 };
+
+export const handleJobNotes = (jobNotes) => {
+  return {
+    type: SET_JOB_NOTES,
+    payload: jobNotes
+  }
+}
 
 
 

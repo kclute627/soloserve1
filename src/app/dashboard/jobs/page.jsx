@@ -5,7 +5,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import Job from "./Job";
 import Newjob from "./newjob/Newjob";
 
-function page() {
+function Page() {
   const [newJob, setNewJob] = useState(false);
   const nodeRef = useRef(null);
   return (
@@ -27,7 +27,7 @@ function page() {
           nodeRef={nodeRef}
           unmountOnExit
         >
-          <Newjob />
+          <Newjob setNewJob={setNewJob} />
         </CSSTransition>
     
 
@@ -36,4 +36,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

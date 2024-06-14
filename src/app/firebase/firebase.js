@@ -16,7 +16,8 @@ import {
   setDoc,
   where,
   query,
-  limit
+  limit,
+  getCountFromServer
 } from "firebase/firestore";
 import {getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable} from "firebase/storage"
 
@@ -289,6 +290,66 @@ const setFileinStorage = (name, file, setDocumentUploadProgress) => {
   });
 };
 
+const getAllJobs = async (user) => {
+
+}
+
+const saveAJobinDB = async (newJobInformation, user) => {
+
+  //check to see if the client is in the database
+
+
+  // add new job 
+
+
+  // Get the count of jobs
+    const jobsCollectionRef = collection(db, "jobs");
+    const snapshot = await getCountFromServer(jobsCollectionRef);
+    const jobCount = snapshot.data().count;
+
+  const newJob = {
+    generatedBy: user.user_uid,
+    jobId: uuidv4(),
+    jobNumber: jobCount,
+    ...newJobInformation
+  }
+
+  try {
+    const docRef = await addDoc(collection(db, "jobs"), newJob);
+    console.log(docRef.id, "docRef.id" )
+    return docRef.id
+   
+  } catch (error) {
+    console.log(error, "error")
+    return null; 
+    
+    
+  }
+
+}
+
+const getJobsByUser = async (user) => {
+  try {
+    const jobsCollectionRef = collection(db, 'jobs');
+    const querySnapshot = await getDocs(
+      query(jobsCollectionRef, where('generatedBy', '==', user.user_uid))
+    );
+
+    const jobs = [];
+    querySnapshot.forEach((doc) => {
+      jobs.push({ id: doc.id, ...doc.data() });
+    });
+
+    return jobs;
+
+
+    
+  } catch (error) {
+    console.error('Error getting jobs:', error);
+    return [];
+  }
+}
+
 export {
   app,
   auth,
@@ -301,5 +362,7 @@ export {
   createNewClientinDb,
   getClientFromDB,
   getMatchingClientsFromDb,
-  setFileinStorage
+  setFileinStorage,
+  saveAJobinDB,
+  getJobsByUser
 };

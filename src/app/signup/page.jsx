@@ -14,6 +14,7 @@ import ErrorPopUp from "../components/ErrorPopUp";
 import Header from "../components/Header";
 import FormTop from "./FormTop";
 import FlexAuto from "../layout/FlexAuto";
+import Link from "next/link";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -165,12 +166,12 @@ export default function SignUp() {
                 placeHolder={"Password"}
               >
                 <div className="text-sm">
-                  <a
+                  <Link
                     href="forgot-password"
                     className="font-semibold text-gray-950 hover:text-gray-700"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </InputForm>
 
@@ -317,12 +318,12 @@ export default function SignUp() {
 
             <p className="mt-10 text-center text-sm text-gray-500">
               Already Have An Account?{" "}
-              <a
+              <Link
                 href="/signin"
                 className="font-semibold leading-6 text-gray-950 hover:text-gray-600"
               >
                 Sign In
-              </a>
+              </Link>
             </p>
           </div>
         </div>

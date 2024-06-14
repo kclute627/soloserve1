@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -11,7 +13,7 @@ function SidebarBottom({ teams }) {
       <ul role="list" className="-mx-2 mt-2 space-y-1">
         {teams.map((team) => (
           <li key={team.name}>
-            <a
+            <Link
               href={team.href}
               className={classNames(
                 team.current
@@ -31,7 +33,7 @@ function SidebarBottom({ teams }) {
                 {team.initial}
               </span>
               <span className="truncate">{team.name}</span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

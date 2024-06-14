@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+"use client"
+
 import {
   createNewClientinDb,
   getClientFromDB,
   getMatchingClientsFromDb,
+  saveAJobinDB,
 } from "../../../firebase/firebase";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -21,39 +22,25 @@ import ServiceDocumentInput from "./Service Documents/ServiceDocumentsInput";
 import CourtInformation from "./Case/CaseInformation";
 import ServiceInfo from "./ServiceInfo/ServiceInfo"
 import JobNotes from "./Calendar/JobNotes"
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ClipLoader } from "react-spinners";
 
-function Newjob() {
+function Newjob({setNewJob}) {
   /// new client
 
-  const [contractInformation, setContractInformation] = useState({
-    sendLink: false,
-    contractorDisplayName: "",
-    contractor_address: {
-      street: "",
-      suite: "",
-      city: "",
-      state: "",
-      zip: "",
-      lat: "",
-      lng: "",
-      googleMapLink: "",
-    },
-    website: "",
-    contact: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-    },
-  });
+ 
 
   // employee / contractor
-  const [serverTypeSelect, setServerTypeSelect] = useState("employee");
+  
 
   const dispatch = useDispatch();
   const { newJobInformation } = useSelector((state) => state.newJob);
   const newClientInfo = useSelector((state) => state.newClient);
   const { user } = useSelector((state) => state.user);
+  
+
+  const [loading, setLoading] =  useState(false)
 
   const handleClientSuggestions = async (text) => {
 
@@ -113,62 +100,31 @@ function Newjob() {
     dispatch(fetchClientInfo(newClient));
   };
 
-  const handleAddNewContractor = async (event) => {
-    const newClient = {
-      user: user,
-      clientDisplayName: newClientInfo.clientDisplayName,
-      client_address: newClientInfo.client_address,
-      phoneNumber: newClientInfo.contact.phoneNumber,
-      email: newClientInfo.contact.email,
-      firstName: newClientInfo.contact.firstName,
-      lastName: newClientInfo.contact.lastName,
-      website: newClientInfo.website,
-    };
-    dispatch(fetchClientInfo(newClient));
-  };
+ 
 
-  const handleAddNewClient = async () => {
-    let data = null;
-    let newDataStructure = null;
+
+  const handleSaveJob = async () => {
+
+    setLoading(true)
+
     try {
-      const newClient = await createNewClientinDb(
-        user,
-        newClientInfo.clientDisplayName,
-        newClientInfo.client_address,
-        newClientInfo.contact.phoneNumber,
-        newClientInfo.contact.email,
-        newClientInfo.contact.firstName,
-        newClientInfo.contact.lastName,
-        newClientInfo.website
-      );
 
-      await getClientFromDB(newClient).then((dispatch) => {
-        dispatch(setSelectedClientInfo(dispatch));
-      });
-
-      newDataStructure = {
-        id: data.id,
-        clientDisplayName: data.name,
-        clientAddress: [...data.addresses],
-        website: data.website,
-        contact: [...data.contacts],
-      };
-      console.log(newDataStructure);
+      const newJobId = await saveAJobinDB(newJobInformation, user )
+      if(newJobId){
+        setNewJob(false)
+      }
+      
     } catch (error) {
-      console.log(error);
+      console.log(error, "error 111")
+      
     }
 
-    if (newDataStructure != null) {
-      setTimeout(() => {}, 1000);
+    setLoading(false)
+  }
 
-      dispatch(setSelectedClient(true));
-    }
-  };
+ 
 
-  const setSelectedClientData = async (data) => async (dispatch) => {
-    await dispatch(setSelectedClientInfo(data));
-    await dispatch(setSelectedClient(true));
-  };
+ 
 
   const handleSelectedClient = async (client) => {
     try {
@@ -178,7 +134,7 @@ function Newjob() {
   };
 
   return (
-    <div>
+    <div className="relative">
       <form action="">
         <div className="p-5 bg-white shadow-lg rounded-lg h-max ">
           <ServiceDocumentInput
@@ -228,10 +184,19 @@ function Newjob() {
         <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
           <CourtInformation />
         </div>
-        <div className="p-5 pb-10 mt-10 bg-white shadow-lg rounded-lg ">
-          <CourtInformation />
-        </div>
+    
       </form>
+      <div className="fixed z-[300] right-10 bottom-20 w-[30rem] px-10 py-8 bg-indigo-500 rounded-full flex justify-around">
+        <button onClick={()=>handleSaveJob()} className="h-[5rem] w-[10rem] bg-gray-600 text-white rounded-lg text-2xl">
+          {!loading ? "Save Job" : <ClipLoader color="white" />}
+          
+        </button>
+        <button onClick={()=>handleSaveJob()} className=" h-[5rem] w-[10rem] bg-gray-600 text-white rounded-lg text-2xl">
+          Cancel Job
+          
+        </button>
+
+      </div>
     </div>
   );
 }

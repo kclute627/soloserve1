@@ -7,6 +7,9 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/20/solid";
 import { CalendarDaysIcon, NoSymbolIcon } from "@heroicons/react/24/outline";
+import { useDispatch } from "react-redux";
+import { handleJobNotes } from "../../../../Redux/actions";
+import { useSelector } from "react-redux";
 
 const assignees = [
   { name: "Unassigned", value: null },
@@ -38,6 +41,9 @@ export default function JobNotes() {
   const [labelled, setLabelled] = useState(labels[0]);
   const [dated, setDated] = useState(dueDates[0]);
 
+  const dispatch = useDispatch()
+  const {newJobInformation} = useSelector(state => state.newJob)
+
   return (
     <div className="">
       <div className="flex w-full pb-4">
@@ -65,7 +71,8 @@ export default function JobNotes() {
             id="instructions"
             className="block w-full resize-none border-0 py-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 text-lg sm:leading-6"
             placeholder="Instructions for the server..."
-            defaultValue={""}
+            value = {newJobInformation.jobNotes}
+            onChange={(e) => dispatch(handleJobNotes(e.target.value))}
           />
 
           {/* Spacer element to match the height of the toolbar */}

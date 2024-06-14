@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Header from "../components/Header";
 import { signInEmail } from "../firebase/firebase";
 import ErrorPopUp from "../components/ErrorPopUp";
+import Link from "next/link";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -119,12 +120,12 @@ export default function ForgotPassword() {
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                   Not a member?{" "}
-                  <a
+                  <Link
                     href="/signup"
                     className="font-semibold leading-6 text-gray-950 hover:text-gray-600"
                   >
                     Start a 14 day free trial
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

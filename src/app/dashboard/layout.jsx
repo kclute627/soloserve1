@@ -15,7 +15,7 @@ import {
   BanknotesIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { auth, getUserFromDb } from "../firebase/firebase";
+import { auth, getJobsByUser, getUserFromDb } from "../firebase/firebase";
 import {
   getUserRequest,
   getUserFailure,
@@ -31,6 +31,8 @@ import { useRouter, useParams, usePathname } from "next/navigation";
 import SidebarDesktop from "./Layout/SidebarDesktop";
 import SidebarBottom from "./Layout/SidebarBottom";
 import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { getAllJobs } from "../Redux/Actions/jobActiontypes";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -46,7 +48,7 @@ const userNavigation = [
   { name: "Sign Out", href: "#" },
 ];
 
-function layout({ children }) {
+function Layout({ children }) {
   const [currentNavigation, setCurrentNavigation] = useState("Dashboard");
   const [navigation, setNavigation] = useState([
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon, current: true },
@@ -127,13 +129,47 @@ function layout({ children }) {
         try {
           const userInfo = await getUserFromDb(authUser);
           dispatch(getUserSuccess(userInfo));
+          
+         
         } catch (error) {
           dispatch(getUserFailure(error));
           console.log(error, "error line98");
         }
       }
     });
+
+    /// get all the jobs for the user 
+
+  
+
+
+
   }, []);
+
+  useEffect(()=>{
+    
+    if(user){
+      console.log(user, "userrrrrrrrrrrrr")
+      getJobs()
+    }
+  }, [user])
+
+  const getJobs = async () => {
+
+    try {
+
+      const jobs = await getJobsByUser(user)
+
+      dispatch(getAllJobs(jobs))
+      
+    } catch (error) {
+      
+    }
+
+
+      
+    
+  }
 
   return (
     <>
@@ -202,7 +238,7 @@ function layout({ children }) {
                           <ul role="list" className="-mx-2 space-y-1">
                             {navigation.map((item) => (
                               <li key={item.name}>
-                                <a
+                                <Link
                                   href={item.href}
                                   onClick={(e) => sidebarClick(e, item.href)}
                                   className={classNames(
@@ -222,7 +258,7 @@ function layout({ children }) {
                                     aria-hidden="true"
                                   />
                                   {item.name}
-                                </a>
+                                </Link>
                               </li>
                             ))}
                           </ul>
@@ -339,7 +375,7 @@ function layout({ children }) {
                       {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
                           {({ active }) => (
-                            <a
+                            <Link
                               href={item.href}
                               onClick={item.name == "Sign Out" ? ()=>handleSignOut() : null}
                               className={classNames(
@@ -348,7 +384,7 @@ function layout({ children }) {
                               )}
                             >
                               {item.name}
-                            </a>
+                            </Link>
                           )}
                         </Menu.Item>
                       ))}
@@ -370,4 +406,4 @@ function layout({ children }) {
   );
 }
 
-export default layout;
+export default Layout;

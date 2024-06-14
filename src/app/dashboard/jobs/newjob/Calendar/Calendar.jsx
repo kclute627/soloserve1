@@ -136,7 +136,6 @@ export default function Calendar() {
 
       // This will trigger the useMemo hook to update days
       dispatch(setJobDueDate(date));
-
     }
   };
 
@@ -192,8 +191,8 @@ export default function Calendar() {
               type="button"
               onClick={() => handleDateSelect(day.date)}
               className={classNames(
+                day.isToday && "bg-indigo-700",
                 "py-1.5 hover:bg-gray-100 focus:z-10",
-                day.isToday && "bg-indigo-900",
                 day.isCurrentMonth ? "bg-white" : "bg-gray-50",
                 (day.isSelected || day.isToday) && "font-semibold  ",
                 day.isSelected && "text-white",
@@ -209,8 +208,7 @@ export default function Calendar() {
                 dayIdx === 0 && "rounded-tl-lg",
                 dayIdx === 6 && "rounded-tr-lg",
                 dayIdx === days.length - 7 && "rounded-bl-lg",
-                dayIdx === days.length - 1 && "rounded-br-lg",
-                
+                dayIdx === days.length - 1 && "rounded-br-lg"
               )}
             >
               <time
@@ -225,7 +223,6 @@ export default function Calendar() {
             </button>
           ))}
         </div>
-        
       </div>
     </div>
   );
